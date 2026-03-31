@@ -1,6 +1,8 @@
 import { View, Text, ScrollView, TouchableOpacity, Share } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { genererEquipes } from '../../lib/algo-equilibrage'
+import { supabase } from '../../lib/supabase'
+import { useEffect } from 'react'
 import { Equipe } from '../../types'
 import { useState } from 'react'
 
@@ -25,6 +27,23 @@ export default function Resultat() {
     setEquipes(newEquipes)
     setEquilibre(newEquilibre)
   }
+
+    useEffect(() => {
+        sauvegarderTirage()
+    }, [])
+
+    async function sauvegarderTirage() {
+    try {
+        await supabase.from('tirages').insert({
+        groupe_id: groupeId,
+        equipes: equipes,
+        equilibre_pct: equilibre,
+        date_match: new Date().toISOString().split('T')[0],
+        })
+    } catch (e) {
+        console.log('Erreur sauvegarde:', e)
+    }
+    }
 
   async function handlePartager() {
     const texte = equipes.map(eq => {

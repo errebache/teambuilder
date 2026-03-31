@@ -1,11 +1,106 @@
-import { View, Text } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import { useRouter } from 'expo-router'
+import { LayoutGrid, Plus } from 'lucide-react-native'
+
+const GROUPES_MOCK = [
+  { id: '1', nom: 'Foot du mercredi', sport: 'Football', emoji: '⚽', nbJoueurs: 12 },
+  { id: '2', nom: 'Basket vendredi', sport: 'Basketball', emoji: '🏀', nbJoueurs: 8 },
+  { id: '3', nom: 'Volley plage', sport: 'Volleyball', emoji: '🏐', nbJoueurs: 10 },
+]
 
 export default function Groupes() {
+  const router = useRouter()
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FAFAF9' }}>
-      <Text style={{ fontSize: 18, fontWeight: '500', color: '#1a1a2e' }}>
-        Mes groupes
-      </Text>
+    <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
+      <View style={{
+        backgroundColor: '#1a1a2e',
+        paddingTop: 60,
+        paddingHorizontal: 20,
+        paddingBottom: 24,
+        borderBottomLeftRadius: 22,
+        borderBottomRightRadius: 22,
+      }}>
+        <Text style={{ color: '#fff', fontSize: 22, fontWeight: '500' }}>
+          Bonjour 👋
+        </Text>
+        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, marginTop: 4 }}>
+          {GROUPES_MOCK.length} groupes actifs
+        </Text>
+      </View>
+
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
+        <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>
+          Mes groupes
+        </Text>
+
+        {GROUPES_MOCK.map(groupe => (
+          <TouchableOpacity
+            key={groupe.id}
+            onPress={() => router.push(`/(tabs)/groupes/${groupe.id}`)}
+            style={{
+              backgroundColor: '#fff',
+              borderRadius: 14,
+              padding: 14,
+              marginBottom: 8,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 12,
+              borderWidth: 0.5,
+              borderColor: 'rgba(0,0,0,0.07)',
+            }}
+          >
+            <View style={{
+              width: 42, height: 42,
+              borderRadius: 12,
+              backgroundColor: '#E6F1FB',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Text style={{ fontSize: 22 }}>{groupe.emoji}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: '#1a1a2e' }}>
+                {groupe.nom}
+              </Text>
+              <Text style={{ fontSize: 12, color: '#999', marginTop: 2 }}>
+                {groupe.nbJoueurs} joueurs · {groupe.sport}
+              </Text>
+            </View>
+            <View style={{
+              backgroundColor: '#E6F1FB',
+              paddingHorizontal: 8,
+              paddingVertical: 3,
+              borderRadius: 20,
+            }}>
+              <Text style={{ fontSize: 10, fontWeight: '500', color: '#185FA5' }}>
+                Actif
+              </Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+
+        <TouchableOpacity
+          onPress={() => router.push('/(tabs)/groupes/new')}
+          style={{
+            backgroundColor: '#1a1a2e',
+            borderRadius: 20,
+            paddingVertical: 12,
+            paddingHorizontal: 24,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            marginTop: 8,
+            alignSelf: 'center',
+          }}
+        >
+          <Plus size={16} color="#fff" />
+          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>
+            Nouveau groupe
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   )
 }

@@ -3,6 +3,7 @@ import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useRouter } from 'expo-router'
+import { signInAnonymously } from '../lib/supabase'
 
 export default function RootLayout() {
   const router = useRouter()
@@ -12,6 +13,7 @@ export default function RootLayout() {
   }, [])
 
   async function checkFirstLaunch() {
+    await signInAnonymously()
     try {
       const hasLaunched = await AsyncStorage.getItem('hasLaunched')
       if (!hasLaunched) {

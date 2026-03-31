@@ -27,7 +27,7 @@ export default function DetailGroupe() {
         borderBottomLeftRadius: 22,
         borderBottomRightRadius: 22,
       }}>
-        <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 8 }}>
+        <TouchableOpacity onPress={() => router.replace('/(tabs)/groupes')} style={{ marginBottom: 8 }}>
           <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>←</Text>
         </TouchableOpacity>
         <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500' }}>
@@ -101,7 +101,7 @@ export default function DetailGroupe() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => router.push('/tirage/selection')}
+          onPress={() => router.push(`/tirage/selection?groupeId=${id}`)}
           style={{
             backgroundColor: '#fff',
             borderRadius: 20,

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
+import { useFocusEffect } from 'expo-router'
+import { useCallback } from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { getPlayerInitials, getRandomAvatarColor } from "../../../lib/supabase"
 import { supabase } from '../../../lib/supabase'
@@ -28,6 +30,17 @@ export default function NewJoueur() {
   const [note, setNote] = useState(3)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  useFocusEffect(
+    useCallback(() => {
+      setPrenom('')
+      setNom('')
+      setSport('Football')
+      setPoste('')
+      setNote(3)
+      setError('')
+    }, [])
+  )
 
   async function handleSubmit() {
     if (!prenom || !nom) {

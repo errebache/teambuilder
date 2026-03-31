@@ -1,16 +1,20 @@
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import { useFocusEffect } from 'expo-router'
+import { useCallback } from 'react'
 import { useRouter } from 'expo-router'
 import { LayoutGrid, Plus } from 'lucide-react-native'
+import { useGroupes } from '../../../hooks/useGroupes'
 
-const GROUPES_MOCK = [
-  { id: '1', nom: 'Foot du mercredi', sport: 'Football', emoji: '⚽', nbJoueurs: 12 },
-  { id: '2', nom: 'Basket vendredi', sport: 'Basketball', emoji: '🏀', nbJoueurs: 8 },
-  { id: '3', nom: 'Volley plage', sport: 'Volleyball', emoji: '🏐', nbJoueurs: 10 },
-]
 
 export default function Groupes() {
   const router = useRouter()
+  const { groupes, loading, fetchGroupes } = useGroupes()
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchGroupes()
+    }, [])
+  )
   return (
     <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
       <View style={{
@@ -25,7 +29,7 @@ export default function Groupes() {
           Bonjour 👋
         </Text>
         <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, marginTop: 4 }}>
-          {GROUPES_MOCK.length} groupes actifs
+          {groupes.length} groupes actifs
         </Text>
       </View>
 
@@ -34,7 +38,7 @@ export default function Groupes() {
           Mes groupes
         </Text>
 
-        {GROUPES_MOCK.map(groupe => (
+        {groupes.map(groupe => (
           <TouchableOpacity
             key={groupe.id}
             onPress={() => router.push(`/(tabs)/groupes/${groupe.id}`)}

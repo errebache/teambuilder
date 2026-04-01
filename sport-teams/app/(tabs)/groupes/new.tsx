@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useFocusEffect } from 'expo-router'
+import { useCallback } from 'react'
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useGroupes } from '../../../hooks/useGroupes'
@@ -13,6 +15,16 @@ export default function NewGroupe() {
   const [emoji, setEmoji] = useState('⚽')
   const [error, setError] = useState('')
   const { createGroupe } = useGroupes()
+
+
+    useFocusEffect(
+      useCallback(() => {
+        setNom('')
+        setSport('')
+        setEmoji('⚽')
+        setError('')
+      }, [])
+    )
 
 
     async function handleSubmit() {

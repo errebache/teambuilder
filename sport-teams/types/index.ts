@@ -4,9 +4,9 @@ export interface Groupe {
   nom: string
   sport: string
   emoji: string
+  code?: string
   created_at: string
 }
-
 export interface Joueur {
   id: string
   groupe_id: string

@@ -1,6 +1,6 @@
-import { View, Text, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Alert, Platform, Share } from 'react-native'
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router'
-import { Plus, Play, Trash2 } from 'lucide-react-native'
+import { Plus, Play, Trash2, Copy } from 'lucide-react-native'
 import { useCallback, useState } from 'react'
 import { useJoueurs } from '../../../hooks/useJoueurs'
 import { supabase } from '../../../lib/supabase'
@@ -19,72 +19,6 @@ export default function DetailGroupe() {
     }, [id])
   )
 
-  // async function handleSupprimer() {
-  //   console.log('test')
-  //   Alert.alert(
-  //     'Supprimer le groupe',
-  //     'Tu vas supprimer ce groupe et tous ses joueurs. Cette action est irréversible.',
-  //     [
-  //       { text: 'Annuler', style: 'cancel' },
-  //       {
-  //         text: 'Supprimer',
-  //         style: 'destructive',
-  //         onPress: async () => {
-  //           try {
-  //             // Supprimer d'abord les joueurs
-  //             await supabase
-  //               .from('joueurs')
-  //               .delete()
-  //               .eq('groupe_id', id)
-
-  //             // Puis supprimer le groupe
-  //             const { error } = await supabase
-  //               .from('groupes')
-  //               .delete()
-  //               .eq('id', id)
-
-  //             if (error) {
-  //               console.log('Erreur suppression:', error)
-  //               Alert.alert('Erreur', error.message)
-  //               return
-  //             }
-
-  //             router.replace('/(tabs)/groupes')
-  //           } catch (e: any) {
-  //             console.log('Erreur:', e)
-  //             Alert.alert('Erreur', e.message)
-  //           }
-  //         },
-  //       },
-  //     ]
-  //   )
-  // }
-
-async function handleSupprimer() {
-  console.log("web")
-  const confirmer = (callback: () => void) => {
-    if (Platform.OS === 'web') {
-      const ok = window.confirm('Supprimer ce groupe et tous ses joueurs ?')
-      if (ok) callback()
-    } else {
-      Alert.alert(
-        'Supprimer le groupe',
-        'Tu vas supprimer ce groupe et tous ses joueurs. Cette action est irréversible.',
-        [
-          { text: 'Annuler', style: 'cancel' },
-          { text: 'Supprimer', style: 'destructive', onPress: callback },
-        ]
-      )
-    }
-  }
-
-  confirmer(async () => {
-    await supabase.from('joueurs').delete().eq('groupe_id', id)
-    const { error } = await supabase.from('groupes').delete().eq('id', id)
-    if (!error) router.replace('/(tabs)/groupes')
-  })
-}
-
   async function fetchGroupe() {
     const { data } = await supabase
       .from('groupes')
@@ -94,23 +28,41 @@ async function handleSupprimer() {
     if (data) setGroupe(data)
   }
 
-  // async function handleSupprimer() {
-  //   Alert.alert(
-  //     'Supprimer le groupe',
-  //     'Tu vas supprimer ce groupe et tous ses joueurs. Cette action est irréversible.',
-  //     [
-  //       { text: 'Annuler', style: 'cancel' },
-  //       {
-  //         text: 'Supprimer',
-  //         style: 'destructive',
-  //         onPress: async () => {
-  //           await supabase.from('groupes').delete().eq('id', id)
-  //           router.replace('/(tabs)/groupes')
-  //         },
-  //       },
-  //     ]
-  //   )
-  // }
+  async function handleSupprimer() {
+    const confirmer = (callback: () => void) => {
+      if (Platform.OS === 'web') {
+        const ok = window.confirm('Supprimer ce groupe et tous ses joueurs ?')
+        if (ok) callback()
+      } else {
+        Alert.alert(
+          'Supprimer le groupe',
+          'Tu vas supprimer ce groupe et tous ses joueurs. Cette action est irréversible.',
+          [
+            { text: 'Annuler', style: 'cancel' },
+            { text: 'Supprimer', style: 'destructive', onPress: callback },
+          ]
+        )
+      }
+    }
+
+    confirmer(async () => {
+      await supabase.from('joueurs').delete().eq('groupe_id', id)
+      const { error } = await supabase.from('groupes').delete().eq('id', id)
+      if (!error) router.replace('/(tabs)/groupes')
+    })
+  }
+
+  async function handlePartagerCode() {
+    if (!groupe?.code) return
+    if (Platform.OS === 'web') {
+      window.navigator.clipboard.writeText(groupe.code)
+      window.alert('Code copié : ' + groupe.code)
+    } else {
+      await Share.share({
+        message: `Rejoins mon groupe "${groupe.nom}" sur Sport Teams !\n\nCode d'invitation : ${groupe.code}`,
+      })
+    }
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
@@ -138,6 +90,28 @@ async function handleSupprimer() {
         <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, marginTop: 4 }}>
           {joueurs.length} joueurs · {groupe?.sport || ''}
         </Text>
+
+        {groupe?.code && (
+          <TouchableOpacity
+            onPress={handlePartagerCode}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 6,
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              paddingHorizontal: 14,
+              paddingVertical: 7,
+              borderRadius: 20,
+              marginTop: 12,
+              alignSelf: 'flex-start',
+            }}
+          >
+            <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500', letterSpacing: 2 }}>
+              {groupe.code}
+            </Text>
+            <Copy size={13} color="rgba(255,255,255,0.7)" />
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>

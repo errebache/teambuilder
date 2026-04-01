@@ -130,6 +130,27 @@ export default function Groupes() {
           </Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          onPress={() => router.push('/(tabs)/groupes/rejoindre')}
+          style={{
+            borderRadius: 20,
+            paddingVertical: 12,
+            paddingHorizontal: 24,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            marginTop: 6,
+            alignSelf: 'center',
+            borderWidth: 0.5,
+            borderColor: 'rgba(0,0,0,0.15)',
+          }}
+        >
+          <Text style={{ color: '#1a1a2e', fontSize: 13, fontWeight: '500' }}>
+            Rejoindre avec un code
+          </Text>
+        </TouchableOpacity>
+
       </ScrollView>
     </View>
   )

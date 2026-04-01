@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native'
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router'
 import { Plus, Play, Trash2 } from 'lucide-react-native'
 import { useCallback, useState } from 'react'
@@ -19,45 +19,71 @@ export default function DetailGroupe() {
     }, [id])
   )
 
-  async function handleSupprimer() {
-    Alert.alert(
-      'Supprimer le groupe',
-      'Tu vas supprimer ce groupe et tous ses joueurs. Cette action est irréversible.',
-      [
-        { text: 'Annuler', style: 'cancel' },
-        {
-          text: 'Supprimer',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              // Supprimer d'abord les joueurs
-              await supabase
-                .from('joueurs')
-                .delete()
-                .eq('groupe_id', id)
+  // async function handleSupprimer() {
+  //   console.log('test')
+  //   Alert.alert(
+  //     'Supprimer le groupe',
+  //     'Tu vas supprimer ce groupe et tous ses joueurs. Cette action est irréversible.',
+  //     [
+  //       { text: 'Annuler', style: 'cancel' },
+  //       {
+  //         text: 'Supprimer',
+  //         style: 'destructive',
+  //         onPress: async () => {
+  //           try {
+  //             // Supprimer d'abord les joueurs
+  //             await supabase
+  //               .from('joueurs')
+  //               .delete()
+  //               .eq('groupe_id', id)
 
-              // Puis supprimer le groupe
-              const { error } = await supabase
-                .from('groupes')
-                .delete()
-                .eq('id', id)
+  //             // Puis supprimer le groupe
+  //             const { error } = await supabase
+  //               .from('groupes')
+  //               .delete()
+  //               .eq('id', id)
 
-              if (error) {
-                console.log('Erreur suppression:', error)
-                Alert.alert('Erreur', error.message)
-                return
-              }
+  //             if (error) {
+  //               console.log('Erreur suppression:', error)
+  //               Alert.alert('Erreur', error.message)
+  //               return
+  //             }
 
-              router.replace('/(tabs)/groupes')
-            } catch (e: any) {
-              console.log('Erreur:', e)
-              Alert.alert('Erreur', e.message)
-            }
-          },
-        },
-      ]
-    )
+  //             router.replace('/(tabs)/groupes')
+  //           } catch (e: any) {
+  //             console.log('Erreur:', e)
+  //             Alert.alert('Erreur', e.message)
+  //           }
+  //         },
+  //       },
+  //     ]
+  //   )
+  // }
+
+async function handleSupprimer() {
+  console.log("web")
+  const confirmer = (callback: () => void) => {
+    if (Platform.OS === 'web') {
+      const ok = window.confirm('Supprimer ce groupe et tous ses joueurs ?')
+      if (ok) callback()
+    } else {
+      Alert.alert(
+        'Supprimer le groupe',
+        'Tu vas supprimer ce groupe et tous ses joueurs. Cette action est irréversible.',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Supprimer', style: 'destructive', onPress: callback },
+        ]
+      )
+    }
   }
+
+  confirmer(async () => {
+    await supabase.from('joueurs').delete().eq('groupe_id', id)
+    const { error } = await supabase.from('groupes').delete().eq('id', id)
+    if (!error) router.replace('/(tabs)/groupes')
+  })
+}
 
   async function fetchGroupe() {
     const { data } = await supabase

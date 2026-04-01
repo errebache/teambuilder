@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react'
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native'
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router'
 import { supabase } from '../../../lib/supabase'
 import { Joueur, Avis } from '../../../types'
+import { Trash2, Pencil } from 'lucide-react-native'
 
 export default function ProfilJoueur() {
   const router = useRouter()
@@ -41,9 +42,7 @@ export default function ProfilJoueur() {
     const { data } = await supabase
       .from('tirages')
       .select('equipes')
-
     if (!data) return
-
     let matchs = 0
     data.forEach(tirage => {
       tirage.equipes.forEach((eq: any) => {
@@ -52,6 +51,32 @@ export default function ProfilJoueur() {
       })
     })
     setNbMatchs(matchs)
+  }
+
+  async function handleSupprimer() {
+    const confirmer = (callback: () => void) => {
+      if (Platform.OS === 'web') {
+        const ok = window.confirm('Supprimer ce joueur ?')
+        if (ok) callback()
+      } else {
+        Alert.alert(
+          'Supprimer le joueur',
+          'Cette action est irréversible.',
+          [
+            { text: 'Annuler', style: 'cancel' },
+            { text: 'Supprimer', style: 'destructive', onPress: callback },
+          ]
+        )
+      }
+    }
+
+    confirmer(async () => {
+      const { error } = await supabase
+        .from('joueurs')
+        .delete()
+        .eq('id', id)
+      if (!error) router.back()
+    })
   }
 
   if (!joueur) return (
@@ -72,12 +97,21 @@ export default function ProfilJoueur() {
         borderBottomRightRadius: 22,
         alignItems: 'center',
       }}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={{ alignSelf: 'flex-start', marginBottom: 16 }}
-        >
-          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>←</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%', marginBottom: 16 }}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>←</Text>
+          </TouchableOpacity>
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity
+            onPress={() => router.push(`/(tabs)/joueurs/edit?id=${id}`)}
+            style={{ marginRight: 16 }}
+          >
+            <Pencil size={18} color="rgba(255,255,255,0.5)" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleSupprimer}>
+            <Trash2 size={18} color="rgba(255,255,255,0.5)" />
+          </TouchableOpacity>
+        </View>
 
         <View style={{
           width: 64, height: 64, borderRadius: 32,

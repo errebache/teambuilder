@@ -9,36 +9,43 @@ export default function RejoindreGroupe() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  async function handleRejoindre() {
+    async function handleRejoindre() {
     if (code.length < 4) {
-      setError('Entre un code valide')
-      return
+        setError('Entre un code valide')
+        return
     }
 
     setLoading(true)
     setError('')
 
     try {
-      const { data, error } = await supabase
+        const { data, error } = await supabase
         .from('groupes')
         .select('*')
         .eq('code', code.toUpperCase().trim())
         .single()
 
-      if (error || !data) {
+        if (error || !data) {
         setError('Code invalide — vérifie et réessaie')
         return
-      }
+        }
 
-      // Groupe trouvé → naviguer vers le détail
-      router.replace(`/(tabs)/groupes/${data.id}`)
+        // ✅ AJOUTE ICI
+        const { data: { user } } = await supabase.auth.getUser()
+        await supabase.from('membres').upsert({
+        groupe_id: data.id,
+        user_id: user?.id,
+        })
+
+        // Redirection
+        router.replace(`/(tabs)/groupes/${data.id}?nouveauMembre=true`)
 
     } catch (e: any) {
-      setError(e.message)
+        setError(e.message)
     } finally {
-      setLoading(false)
+        setLoading(false)
     }
-  }
+    }
 
   return (
     <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>

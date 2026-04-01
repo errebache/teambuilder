@@ -1,14 +1,14 @@
 import { View, Text, ScrollView, TouchableOpacity, Alert, Platform, Share } from 'react-native'
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router'
 import { Plus, Play, Trash2, Copy } from 'lucide-react-native'
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { useJoueurs } from '../../../hooks/useJoueurs'
 import { supabase } from '../../../lib/supabase'
 import { Groupe } from '../../../types'
 
 export default function DetailGroupe() {
   const router = useRouter()
-  const { id } = useLocalSearchParams()
+  const { id, nouveauMembre } = useLocalSearchParams()
   const { joueurs, fetchJoueurs } = useJoueurs(id as string)
   const [groupe, setGroupe] = useState<Groupe | null>(null)
 
@@ -18,6 +18,28 @@ export default function DetailGroupe() {
       fetchGroupe()
     }, [id])
   )
+
+  useEffect(() => {
+  if (nouveauMembre === 'true') {
+    const message = 'Bienvenue ! Ajoute-toi comme joueur pour participer aux tirages.'
+    if (Platform.OS === 'web') {
+      const ok = window.confirm(message + '\n\nT\'ajouter maintenant ?')
+      if (ok) router.push(`/(tabs)/joueurs/new?groupeId=${id}`)
+    } else {
+      Alert.alert(
+        'Bienvenue ! 🎉',
+        message,
+        [
+          { text: 'Plus tard', style: 'cancel' },
+          {
+            text: 'M\'ajouter',
+            onPress: () => router.push(`/(tabs)/joueurs/new?groupeId=${id}`)
+          },
+        ]
+      )
+    }
+  }
+}, [nouveauMembre])
 
   async function fetchGroupe() {
     const { data } = await supabase

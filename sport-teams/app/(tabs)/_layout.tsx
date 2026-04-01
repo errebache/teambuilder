@@ -26,11 +26,7 @@ export default function TabsLayout() {
             <View style={{ alignItems: 'center', gap: 3 }}>
               <LayoutGrid size={20} color={color} />
               {focused && (
-                <View style={{
-                  width: 4, height: 4,
-                  borderRadius: 2,
-                  backgroundColor: '#1a1a2e'
-                }} />
+                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#1a1a2e' }} />
               )}
             </View>
           ),
@@ -43,11 +39,7 @@ export default function TabsLayout() {
             <View style={{ alignItems: 'center', gap: 3 }}>
               <Users size={20} color={color} />
               {focused && (
-                <View style={{
-                  width: 4, height: 4,
-                  borderRadius: 2,
-                  backgroundColor: '#1a1a2e'
-                }} />
+                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#1a1a2e' }} />
               )}
             </View>
           ),
@@ -60,11 +52,7 @@ export default function TabsLayout() {
             <View style={{ alignItems: 'center', gap: 3 }}>
               <Clock size={20} color={color} />
               {focused && (
-                <View style={{
-                  width: 4, height: 4,
-                  borderRadius: 2,
-                  backgroundColor: '#1a1a2e'
-                }} />
+                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#1a1a2e' }} />
               )}
             </View>
           ),

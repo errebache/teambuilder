@@ -11,16 +11,38 @@ export function useGroupes() {
     fetchGroupes()
   }, [])
 
-  async function fetchGroupes() {
+ async function fetchGroupes() {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+
+      const { data: { user } } = await supabase.auth.getUser()
+
+      // Groupes créés par l'utilisateur
+      const { data: mesGroupes } = await supabase
         .from('groupes')
         .select('*')
+        .eq('user_id', user?.id)
         .order('created_at', { ascending: false })
 
-      if (error) throw error
-      setGroupes(data || [])
+      // Groupes rejoints via code
+      const { data: memberships } = await supabase
+        .from('membres')
+        .select('groupe_id, groupes(*)')
+        .eq('user_id', user?.id)
+
+      const groupesRejoints = memberships
+        ?.map((m: any) => m.groupes)
+        .filter(Boolean) || []
+
+      // Fusionner sans doublons
+      const tousGroupes = [
+        ...(mesGroupes || []),
+        ...groupesRejoints.filter(
+          g => !mesGroupes?.find(mg => mg.id === g.id)
+        ),
+      ]
+
+      setGroupes(tousGroupes)
     } catch (e: any) {
       setError(e.message)
     } finally {

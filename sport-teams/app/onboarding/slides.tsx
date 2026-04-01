@@ -26,6 +26,18 @@ export default function Slides() {
           Commencer
         </Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => router.push('/(tabs)/groupes/rejoindre')}
+        style={{
+          marginTop: 12,
+          paddingVertical: 12,
+          paddingHorizontal: 32,
+        }}
+      >
+        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>
+          Rejoindre avec un code →
+        </Text>
+      </TouchableOpacity>
     </View>
   )
 }

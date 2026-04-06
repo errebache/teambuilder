@@ -15,6 +15,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 // Utilitaires
 export function getPlayerInitials(prenom: string, nom: string): string {
+  if (!nom) return prenom.substring(0, 2).toUpperCase()
   return `${prenom.charAt(0)}${nom.charAt(0)}`.toUpperCase()
 }
 

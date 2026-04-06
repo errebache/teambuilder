@@ -125,7 +125,7 @@ export default function Selection() {
               alignItems: 'center', justifyContent: 'center',
             }}>
               <Text style={{ fontSize: 12, fontWeight: '500', color: '#185FA5' }}>
-                {joueur.prenom[0]}{joueur.nom[0]}
+                {joueur.prenom.substring(0,2).toUpperCase()}
               </Text>
             </View>
             <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: '#1a1a2e' }}>

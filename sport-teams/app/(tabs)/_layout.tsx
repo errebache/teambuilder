@@ -31,6 +31,12 @@ export default function TabsLayout() {
             </View>
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault()
+            navigation.navigate('groupes', { screen: 'index' })
+          },
+        })}
       />
       <Tabs.Screen
         name="joueurs"
@@ -44,6 +50,12 @@ export default function TabsLayout() {
             </View>
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault()
+            navigation.navigate('joueurs', { screen: 'index' })
+          },
+        })}
       />
       <Tabs.Screen
         name="historique"
@@ -57,6 +69,12 @@ export default function TabsLayout() {
             </View>
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault()
+            navigation.navigate('historique', { screen: 'index' })
+          },
+        })}
       />
     </Tabs>
   )

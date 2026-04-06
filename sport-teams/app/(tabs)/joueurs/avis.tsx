@@ -8,9 +8,16 @@ import { Joueur } from '../../../types'
 import { row, textAlign, alignSelf, arrow } from '../../../lib/rtl'
 
 const TAGS_DISPONIBLES = [
-  'tagRapide', 'tagTechnique', 'tagDefenseur', 'tagAttaquant',
-  'tagPasseur', 'tagButeur', 'tagLeader', 'tagRegulier',
-  'tagAgressif', 'tagFairPlay',
+  { key: 'Rapide',      emoji: '⚡' },
+  { key: 'Technique',   emoji: '🎯' },
+  { key: 'Défenseur',   emoji: '🛡️' },
+  { key: 'Attaquant',   emoji: '🔥' },
+  { key: 'Passeur',     emoji: '🤝' },
+  { key: 'Buteur',      emoji: '⚽' },
+  { key: 'Leader',      emoji: '👑' },
+  { key: 'Régulier',    emoji: '📈' },
+  { key: 'Combatif',    emoji: '💪' },
+  { key: 'Fair-play',   emoji: '🤲' },
 ]
 
 export default function LaisserAvis() {
@@ -146,12 +153,12 @@ export default function LaisserAvis() {
           marginBottom: 10,
         }}>
           <Text style={{ fontSize: 18, fontWeight: '600', color: '#185FA5' }}>
-            {joueur.prenom.substring(0, 2).toUpperCase()}
+            {joueur.prenom.substring(0, 2).toUpperCase() || '?'}
           </Text>
         </View>
 
         <Text style={{ color: '#fff', fontSize: 18, fontWeight: '500' }}>
-          {joueur.prenom} {joueur.nom}
+          {joueur.prenom}
         </Text>
         <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 4 }}>
           {t('leaveReviewSubtitle')}
@@ -208,24 +215,26 @@ export default function LaisserAvis() {
           </Text>
           <View style={{ flexDirection: row(isRTL), flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
             {TAGS_DISPONIBLES.map(tag => {
-              const selectionne = tags.includes(tag)
+              const selectionne = tags.includes(tag.key)
               return (
                 <TouchableOpacity
-                  key={tag}
-                  onPress={() => toggleTag(tag)}
+                  key={tag.key}
+                  onPress={() => toggleTag(tag.key)}
                   style={{
-                    paddingHorizontal: 14, paddingVertical: 7,
+                    flexDirection: 'row', alignItems: 'center', gap: 5,
+                    paddingHorizontal: 14, paddingVertical: 8,
                     borderRadius: 20,
                     backgroundColor: selectionne ? colors.header : colors.card,
                     borderWidth: 0.5,
                     borderColor: selectionne ? colors.header : colors.border,
                   }}
                 >
+                  <Text style={{ fontSize: 14 }}>{tag.emoji}</Text>
                   <Text style={{
                     fontSize: 13, fontWeight: '500',
                     color: selectionne ? '#fff' : colors.textSecondary,
                   }}>
-                    {t(tag)}
+                    {tag.key}
                   </Text>
                 </TouchableOpacity>
               )

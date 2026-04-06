@@ -93,7 +93,7 @@ function TerrainEquipe({
                 elevation: 4,
               }}>
                 <Text style={{ color: '#fff', fontSize: 11, fontWeight: '800' }}>
-                  {j.prenom[0]}{j.nom[0]}
+                  {j.prenom.substring(0,2).toUpperCase()}
                 </Text>
               </View>
               <Text style={{
@@ -386,7 +386,7 @@ export default function Resultat() {
                       backgroundColor: j.couleur_avatar,
                       alignItems: 'center', justifyContent: 'center',
                     }}>
-                      <Text style={{ fontSize: 9, fontWeight: '500', color: '#185FA5' }}>{j.prenom[0]}{j.nom[0]}</Text>
+                      <Text style={{ fontSize: 9, fontWeight: '500', color: '#185FA5' }}>{j.prenom.substring(0,2).toUpperCase()}</Text>
                     </View>
                     <Text style={{ flex: 1, fontSize: 12, color: '#1a1a2e' }}>{j.prenom} {j.nom}</Text>
                     <Text style={{

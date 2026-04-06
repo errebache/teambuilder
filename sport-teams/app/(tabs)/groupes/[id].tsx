@@ -157,7 +157,7 @@ export default function DetailGroupe() {
           joueurs.map(joueur => (
             <TouchableOpacity
               key={joueur.id}
-              onPress={() => router.push(`/(tabs)/joueurs/${joueur.id}`)}
+              onPress={() => router.push(`/(tabs)/joueurs/${joueur.id}?from=groupe&groupeId=${id}`)}
               style={{
                 backgroundColor: '#fff',
                 borderRadius: 12,
@@ -178,7 +178,7 @@ export default function DetailGroupe() {
                 justifyContent: 'center',
               }}>
                 <Text style={{ fontSize: 12, fontWeight: '500', color: '#185FA5' }}>
-                  {joueur.prenom[0]}{joueur.nom[0]}
+                  {joueur.prenom.substring(0,2).toUpperCase()}
                 </Text>
               </View>
               <View style={{ flex: 1 }}>

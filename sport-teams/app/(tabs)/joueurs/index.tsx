@@ -134,7 +134,7 @@ export default function Joueurs() {
                           marginBottom: 6,
                         }}>
                           <Text style={{ fontSize: 14, fontWeight: '600', color: '#185FA5' }}>
-                            {j.prenom[0]}{j.nom[0]}
+                            {j.prenom.substring(0,2).toUpperCase()}
                           </Text>
                         </View>
                         <Text style={{ fontSize: 11, fontWeight: '500', color: '#1a1a2e', textAlign: 'center' }} numberOfLines={1}>
@@ -177,7 +177,7 @@ export default function Joueurs() {
                   alignItems: 'center', justifyContent: 'center',
                 }}>
                   <Text style={{ fontSize: 13, fontWeight: '600', color: '#185FA5' }}>
-                    {joueur.prenom[0]}{joueur.nom[0]}
+                    {joueur.prenom.substring(0,2).toUpperCase()}
                   </Text>
                 </View>
                 <View style={{ flex: 1 }}>

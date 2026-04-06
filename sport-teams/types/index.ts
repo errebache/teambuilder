@@ -7,6 +7,15 @@ export interface Groupe {
   code?: string
   created_at: string
 }
+export interface Qualites {
+  vitesse: number
+  precision: number
+  physique: number
+  vision: number
+  defense: number
+  technique: number
+}
+
 export interface Joueur {
   id: string
   groupe_id: string
@@ -15,6 +24,7 @@ export interface Joueur {
   note_moyenne: number
   poste?: string
   couleur_avatar: string
+  qualites?: Qualites
   created_at: string
 }
 

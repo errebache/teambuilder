@@ -4,12 +4,14 @@ import { StatusBar } from 'expo-status-bar'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useRouter } from 'expo-router'
 import { signInAnonymously } from '../lib/supabase'
+import { demanderPermissions } from '../lib/notifications'
 
 export default function RootLayout() {
   const router = useRouter()
 
   useEffect(() => {
     checkFirstLaunch()
+    demanderPermissions()
   }, [])
 
   async function checkFirstLaunch() {

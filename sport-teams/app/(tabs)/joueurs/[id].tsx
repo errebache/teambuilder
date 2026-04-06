@@ -90,7 +90,7 @@ export default function ProfilJoueur() {
 
       <View style={{
         backgroundColor: '#1a1a2e',
-        paddingTop: 60,
+        paddingTop: 44,
         paddingHorizontal: 20,
         paddingBottom: 28,
         borderBottomLeftRadius: 22,

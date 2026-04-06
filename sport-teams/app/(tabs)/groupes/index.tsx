@@ -18,7 +18,7 @@ export default function Groupes() {
     <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
       <View style={{
         backgroundColor: '#1a1a2e',
-        paddingTop: 60,
+        paddingTop: 44,
         paddingHorizontal: 20,
         paddingBottom: 24,
         borderBottomLeftRadius: 22,
@@ -37,6 +37,30 @@ export default function Groupes() {
             <Settings size={22} color="rgba(255,255,255,0.6)" />
           </TouchableOpacity>
         </View>
+
+        <View style={{ flexDirection: 'row', gap: 10, marginTop: 16 }}>
+          <TouchableOpacity
+            onPress={() => router.push('/(tabs)/groupes/new')}
+            style={{
+              flex: 1, backgroundColor: '#185FA5',
+              borderRadius: 12, paddingVertical: 11,
+              flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+            }}
+          >
+            <Plus size={15} color="#fff" />
+            <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>Nouveau groupe</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push('/(tabs)/groupes/rejoindre')}
+            style={{
+              flex: 1, backgroundColor: 'rgba(255,255,255,0.12)',
+              borderRadius: 12, paddingVertical: 11,
+              alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>Rejoindre avec un code</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
@@ -53,10 +77,14 @@ export default function Groupes() {
             <Text style={{ color: '#999', fontSize: 13 }}>Chargement...</Text>
           </View>
         ) : groupes.length === 0 ? (
-          <View style={{ alignItems: 'center', marginTop: 60 }}>
-            <Text style={{ fontSize: 40, marginBottom: 12 }}>⚽</Text>
+          <View style={{
+            backgroundColor: '#fff', borderRadius: 16, padding: 40,
+            alignItems: 'center', marginTop: 8,
+            borderWidth: 0.5, borderColor: 'rgba(0,0,0,0.07)',
+          }}>
+            <Text style={{ fontSize: 48, marginBottom: 12 }}>⚽</Text>
             <Text style={{ fontSize: 16, fontWeight: '500', color: '#1a1a2e' }}>
-              Aucun groupe encore
+              Aucun groupe pour l'instant
             </Text>
             <Text style={{ fontSize: 13, color: '#999', marginTop: 4 }}>
               Crée ton premier groupe !
@@ -108,48 +136,6 @@ export default function Groupes() {
             </TouchableOpacity>
           ))
         )}
-
-        <TouchableOpacity
-          onPress={() => router.push('/(tabs)/groupes/new')}
-          style={{
-            backgroundColor: '#1a1a2e',
-            borderRadius: 20,
-            paddingVertical: 12,
-            paddingHorizontal: 24,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            marginTop: 8,
-            alignSelf: 'center',
-          }}
-        >
-          <Plus size={16} color="#fff" />
-          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>
-            Nouveau groupe
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => router.push('/(tabs)/groupes/rejoindre')}
-          style={{
-            borderRadius: 20,
-            paddingVertical: 12,
-            paddingHorizontal: 24,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            marginTop: 6,
-            alignSelf: 'center',
-            borderWidth: 0.5,
-            borderColor: 'rgba(0,0,0,0.15)',
-          }}
-        >
-          <Text style={{ color: '#1a1a2e', fontSize: 13, fontWeight: '500' }}>
-            Rejoindre avec un code
-          </Text>
-        </TouchableOpacity>
 
       </ScrollView>
     </View>

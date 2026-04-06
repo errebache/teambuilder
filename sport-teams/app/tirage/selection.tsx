@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router'
 import { useJoueurs } from '../../hooks/useJoueurs'
@@ -18,12 +18,10 @@ export default function Selection() {
     }, [groupeId])
   )
 
-  // Par défaut tous présents
-  useFocusEffect(
-    useCallback(() => {
-      setPresents(new Set(joueurs.map(j => j.id)))
-    }, [joueurs])
-  )
+  // Par défaut tous présents — useEffect pour réagir au chargement async
+  useEffect(() => {
+    setPresents(new Set(joueurs.map(j => j.id)))
+  }, [joueurs])
 
   function togglePresent(id: string) {
     setPresents(prev => {
@@ -55,7 +53,7 @@ export default function Selection() {
     <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
       <View style={{
         backgroundColor: '#1a1a2e',
-        paddingTop: 60,
+        paddingTop: 44,
         paddingHorizontal: 20,
         paddingBottom: 24,
         borderBottomLeftRadius: 22,

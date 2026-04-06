@@ -5,6 +5,7 @@ import { Joueur } from '../types'
 export function useJoueurs(groupeId: string) {
   const [joueurs, setJoueurs] = useState<Joueur[]>([])
   const [loading, setLoading] = useState(false)
+  const [hasFetched, setHasFetched] = useState(false)
 
   async function fetchJoueurs() {
     if (!groupeId) return
@@ -19,8 +20,9 @@ export function useJoueurs(groupeId: string) {
       setJoueurs(data || [])
     } finally {
       setLoading(false)
+      setHasFetched(true)
     }
   }
 
-  return { joueurs, loading, fetchJoueurs }
+  return { joueurs, loading, hasFetched, fetchJoueurs }
 }

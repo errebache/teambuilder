@@ -44,7 +44,7 @@ export default function NewGroupe() {
     <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
       <View style={{
         backgroundColor: '#1a1a2e',
-        paddingTop: 60,
+        paddingTop: 44,
         paddingHorizontal: 20,
         paddingBottom: 24,
         borderBottomLeftRadius: 22,

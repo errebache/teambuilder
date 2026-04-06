@@ -12,9 +12,10 @@ export default function Resultat() {
   const router = useRouter()
   const { equipes: equipesParam, equilibrePct, groupeId } = useLocalSearchParams()
   
-  const [equipes, setEquipes] = useState<Equipe[]>(
-    JSON.parse(equipesParam as string)
-  )
+  const [equipes, setEquipes] = useState<Equipe[]>(() => {
+    try { return JSON.parse(equipesParam as string) ?? [] }
+    catch { return [] }
+  })
   const [equilibre, setEquilibre] = useState(Number(equilibrePct))
 
   function handleRelancer() {
@@ -62,7 +63,7 @@ export default function Resultat() {
     <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
       <View style={{
         backgroundColor: '#1a1a2e',
-        paddingTop: 60,
+        paddingTop: 44,
         paddingHorizontal: 20,
         paddingBottom: 24,
         borderBottomLeftRadius: 22,

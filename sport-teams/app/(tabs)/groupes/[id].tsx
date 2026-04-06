@@ -9,7 +9,7 @@ import { Groupe } from '../../../types'
 export default function DetailGroupe() {
   const router = useRouter()
   const { id, nouveauMembre } = useLocalSearchParams()
-  const { joueurs, fetchJoueurs } = useJoueurs(id as string)
+  const { joueurs, hasFetched, fetchJoueurs } = useJoueurs(id as string)
   const [groupe, setGroupe] = useState<Groupe | null>(null)
 
   useFocusEffect(
@@ -19,9 +19,13 @@ export default function DetailGroupe() {
     }, [id])
   )
 
+  // Attendre que le fetch soit terminé avant de montrer le dialog
   useEffect(() => {
-  if (nouveauMembre === 'true') {
-    const message = 'Bienvenue ! Ajoute-toi comme joueur pour participer aux tirages.'
+    if (nouveauMembre !== 'true') return
+    if (!hasFetched) return
+    const message = joueurs.length === 0
+      ? 'Ce groupe n\'a pas encore de joueurs. Ajoute-toi le premier !'
+      : 'Bienvenue ! Veux-tu t\'ajouter comme joueur ?'
     if (Platform.OS === 'web') {
       const ok = window.confirm(message + '\n\nT\'ajouter maintenant ?')
       if (ok) router.push(`/(tabs)/joueurs/new?groupeId=${id}`)
@@ -38,8 +42,7 @@ export default function DetailGroupe() {
         ]
       )
     }
-  }
-}, [nouveauMembre])
+  }, [nouveauMembre, hasFetched])
 
   async function fetchGroupe() {
     const { data } = await supabase
@@ -87,10 +90,10 @@ export default function DetailGroupe() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
+    <View style={{ flex: 1, backgroundColor: '#FAFAF9', paddingBottom: 80 }}>
       <View style={{
         backgroundColor: '#1a1a2e',
-        paddingTop: 60,
+        paddingTop: 44,
         paddingHorizontal: 20,
         paddingBottom: 24,
         borderBottomLeftRadius: 22,
@@ -193,55 +196,42 @@ export default function DetailGroupe() {
           ))
         )}
 
+      </ScrollView>
+
+      {/* Boutons fixes en bas */}
+      <View style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        flexDirection: 'row', gap: 10,
+        padding: 16, backgroundColor: '#FAFAF9',
+        borderTopWidth: 0.5, borderTopColor: 'rgba(0,0,0,0.07)',
+      }}>
         <TouchableOpacity
           onPress={() => router.push(`/(tabs)/joueurs/new?groupeId=${id}`)}
           style={{
-            backgroundColor: '#1a1a2e',
-            borderRadius: 20,
-            paddingVertical: 12,
-            paddingHorizontal: 24,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            marginTop: 8,
-            alignSelf: 'center',
+            flex: 1, backgroundColor: '#1a1a2e',
+            borderRadius: 14, paddingVertical: 14,
+            flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
           }}
         >
-          <Plus size={16} color="#fff" />
-          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>
-            Ajouter un joueur
-          </Text>
+          <Plus size={15} color="#fff" />
+          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>Ajouter un joueur</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => router.push(`/tirage/selection?groupeId=${id}`)}
           disabled={joueurs.length < 4}
           style={{
-            backgroundColor: joueurs.length >= 4 ? '#fff' : '#f5f5f5',
-            borderRadius: 20,
-            paddingVertical: 12,
-            paddingHorizontal: 24,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            marginTop: 8,
-            alignSelf: 'center',
-            borderWidth: 0.5,
-            borderColor: 'rgba(0,0,0,0.1)',
-            opacity: joueurs.length >= 4 ? 1 : 0.5,
+            flex: 1, backgroundColor: joueurs.length >= 4 ? '#1DB954' : '#ccc',
+            borderRadius: 14, paddingVertical: 14,
+            flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
           }}
         >
-          <Play size={16} color="#1a1a2e" />
-          <Text style={{ color: '#1a1a2e', fontSize: 13, fontWeight: '500' }}>
-            {joueurs.length < 4
-              ? `Encore ${4 - joueurs.length} joueur(s)`
-              : 'Générer les équipes'}
+          <Play size={15} color="#fff" />
+          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>
+            {joueurs.length < 4 ? `Encore ${4 - joueurs.length}` : 'Générer les équipes'}
           </Text>
         </TouchableOpacity>
-
-      </ScrollView>
+      </View>
     </View>
   )
 }

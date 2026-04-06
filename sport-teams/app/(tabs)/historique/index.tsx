@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react'
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import { useFocusEffect } from 'expo-router'
 import { supabase } from '../../../lib/supabase'
 
 export default function Historique() {
   const [tirages, setTirages] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
+  const [fetchError, setFetchError] = useState<string | null>(null)
 
   useFocusEffect(
     useCallback(() => {
@@ -15,13 +16,32 @@ export default function Historique() {
 
   async function fetchTirages() {
     setLoading(true)
+    setFetchError(null)
     try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setTirages([]); return }
+
+      const [{ data: mesGroupes }, { data: memberships }] = await Promise.all([
+        supabase.from('groupes').select('id').eq('user_id', user.id),
+        supabase.from('membres').select('groupe_id').eq('user_id', user.id),
+      ])
+
+      const tousGroupeIds = [
+        ...(mesGroupes || []).map((g: any) => g.id),
+        ...(memberships || []).map((m: any) => m.groupe_id),
+      ].filter((id, i, arr) => arr.indexOf(id) === i)
+
+      if (tousGroupeIds.length === 0) { setTirages([]); return }
+
       const { data, error } = await supabase
         .from('tirages')
         .select('*, groupes(nom, emoji)')
+        .in('groupe_id', tousGroupeIds)
         .order('created_at', { ascending: false })
       if (error) throw error
       setTirages(data || [])
+    } catch (e: any) {
+      setFetchError(e.message)
     } finally {
       setLoading(false)
     }
@@ -31,7 +51,7 @@ export default function Historique() {
     <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
       <View style={{
         backgroundColor: '#1a1a2e',
-        paddingTop: 60,
+        paddingTop: 44,
         paddingHorizontal: 20,
         paddingBottom: 24,
         borderBottomLeftRadius: 22,
@@ -46,7 +66,12 @@ export default function Historique() {
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
-        {tirages.length === 0 && !loading ? (
+        {fetchError ? (
+          <View style={{ alignItems: 'center', marginTop: 60 }}>
+            <Text style={{ fontSize: 32, marginBottom: 12 }}>⚠️</Text>
+            <Text style={{ fontSize: 14, color: '#E24B4A', textAlign: 'center' }}>{fetchError}</Text>
+          </View>
+        ) : tirages.length === 0 && !loading ? (
           <View style={{ alignItems: 'center', marginTop: 60 }}>
             <Text style={{ fontSize: 32, marginBottom: 12 }}>🏆</Text>
             <Text style={{ fontSize: 16, fontWeight: '500', color: '#1a1a2e' }}>
@@ -57,7 +82,7 @@ export default function Historique() {
             </Text>
           </View>
         ) : (
-          tirages.map((tirage, i) => (
+          tirages.map((tirage) => (
             <View
               key={tirage.id}
               style={{

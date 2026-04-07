@@ -5,7 +5,7 @@ import { supabase } from '../../../lib/supabase'
 import { cacheGet, cacheSet } from '../../../lib/cache'
 import { useLanguage } from '../../../contexts/LanguageContext'
 
-const COULEURS = ['#185FA5', '#0F6E56', '#854F0B', '#534AB7']
+const COULEURS = ['#2563eb', '#22c55e', '#f59e0b', '#8b5cf6']
 
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr)
@@ -18,9 +18,9 @@ function formatDate(dateStr: string): string {
 }
 
 function getEquilibreColor(pct: number): string {
-  if (pct >= 90) return '#1DB954'
-  if (pct >= 70) return '#185FA5'
-  return '#E9A84C'
+  if (pct >= 90) return '#22c55e'
+  if (pct >= 70) return '#2563eb'
+  return '#f59e0b'
 }
 
 export default function Historique() {
@@ -79,16 +79,14 @@ export default function Historique() {
     : 0
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F5F4F0' }}>
+    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
 
       {/* Header */}
       <View style={{
-        backgroundColor: '#1a1a2e',
-        paddingTop: 44,
+        backgroundColor: '#1e3a5f',
+        paddingTop: 48,
         paddingHorizontal: 20,
         paddingBottom: 28,
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
       }}>
         <Text style={{ color: '#fff', fontSize: 24, fontWeight: '600', letterSpacing: -0.3 }}>
           {t('history')}
@@ -114,7 +112,7 @@ export default function Historique() {
               borderRadius: 14, padding: 12,
             }}>
               <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Meilleur équilibre</Text>
-              <Text style={{ color: '#1DB954', fontSize: 13, fontWeight: '600', marginTop: 4 }}>
+              <Text style={{ color: '#22c55e', fontSize: 13, fontWeight: '600', marginTop: 4 }}>
                 {tirages.length > 0 ? Math.max(...tirages.map((t: any) => t.equilibre_pct)) : 0}%
               </Text>
             </View>
@@ -127,7 +125,7 @@ export default function Historique() {
         {fetchError ? (
           <View style={{ alignItems: 'center', marginTop: 60 }}>
             <Text style={{ fontSize: 32, marginBottom: 12 }}>⚠️</Text>
-            <Text style={{ fontSize: 14, color: '#E24B4A', textAlign: 'center' }}>{fetchError}</Text>
+            <Text style={{ fontSize: 14, color: '#ef4444', textAlign: 'center' }}>{fetchError}</Text>
           </View>
 
         ) : tirages.length > 0 ? (
@@ -137,15 +135,15 @@ export default function Historique() {
               <View
                 key={tirage.id}
                 style={{
-                  backgroundColor: '#fff',
-                  borderRadius: 18,
+                  backgroundColor: '#ffffff',
+                  borderRadius: 16,
                   marginBottom: 12,
                   overflow: 'hidden',
-                  shadowColor: '#000',
+                  shadowColor: '#0f172a',
                   shadowOpacity: 0.06,
-                  shadowRadius: 12,
-                  shadowOffset: { width: 0, height: 4 },
-                  elevation: 3,
+                  shadowRadius: 8,
+                  shadowOffset: { width: 0, height: 2 },
+                  elevation: 2,
                 }}
               >
                 {/* Top card */}
@@ -153,17 +151,17 @@ export default function Historique() {
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <View style={{
                       width: 40, height: 40, borderRadius: 12,
-                      backgroundColor: '#F1EFE8',
+                      backgroundColor: '#f1f5f9',
                       alignItems: 'center', justifyContent: 'center',
                       marginRight: 12,
                     }}>
                       <Text style={{ fontSize: 20 }}>{tirage.groupes?.emoji || '⚽'}</Text>
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={{ fontSize: 14, fontWeight: '600', color: '#1a1a2e' }}>
+                      <Text style={{ fontSize: 14, fontWeight: '600', color: '#0f172a' }}>
                         {tirage.groupes?.nom || 'Groupe'}
                       </Text>
-                      <Text style={{ fontSize: 12, color: '#999', marginTop: 1 }}>
+                      <Text style={{ fontSize: 12, color: '#64748b', marginTop: 1 }}>
                         {formatDate(tirage.date_match)}
                       </Text>
                     </View>
@@ -183,7 +181,7 @@ export default function Historique() {
                   {/* Barre d'équilibre */}
                   <View style={{
                     height: 3, borderRadius: 2,
-                    backgroundColor: 'rgba(0,0,0,0.05)',
+                    backgroundColor: '#e2e8f0',
                     flexDirection: 'row',
                     overflow: 'hidden',
                     marginTop: 14,
@@ -200,31 +198,31 @@ export default function Historique() {
                 {/* Équipes */}
                 <View style={{
                   flexDirection: 'row',
-                  borderTopWidth: 0.5,
-                  borderTopColor: 'rgba(0,0,0,0.06)',
+                  borderTopWidth: 1,
+                  borderTopColor: '#e2e8f0',
                 }}>
                   {tirage.equipes.map((eq: any, i: number) => (
                     <View key={i} style={{
                       flex: 1,
                       padding: 12,
-                      borderRightWidth: i < tirage.equipes.length - 1 ? 0.5 : 0,
-                      borderRightColor: 'rgba(0,0,0,0.06)',
+                      borderRightWidth: i < tirage.equipes.length - 1 ? 1 : 0,
+                      borderRightColor: '#e2e8f0',
                     }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 8 }}>
                         <View style={{
                           width: 8, height: 8, borderRadius: 4,
                           backgroundColor: COULEURS[i % COULEURS.length],
                         }} />
-                        <Text style={{ fontSize: 11, fontWeight: '700', color: '#1a1a2e' }}>
+                        <Text style={{ fontSize: 11, fontWeight: '700', color: '#0f172a' }}>
                           {eq.nom}
                         </Text>
-                        <Text style={{ fontSize: 10, color: '#bbb', marginLeft: 'auto' }}>
+                        <Text style={{ fontSize: 10, color: '#94a3b8', marginLeft: 'auto' }}>
                           {eq.joueurs.length}
                         </Text>
                       </View>
                       {eq.joueurs.map((j: any) => (
                         <Text key={j.id} style={{
-                          fontSize: 11, color: '#555', marginBottom: 2,
+                          fontSize: 11, color: '#64748b', marginBottom: 2,
                         }} numberOfLines={1}>
                           {j.prenom}
                         </Text>
@@ -240,16 +238,16 @@ export default function Historique() {
           <View style={{ alignItems: 'center', marginTop: 80 }}>
             <View style={{
               width: 80, height: 80, borderRadius: 40,
-              backgroundColor: '#F1EFE8',
+              backgroundColor: '#f1f5f9',
               alignItems: 'center', justifyContent: 'center',
               marginBottom: 16,
             }}>
               <Text style={{ fontSize: 36 }}>🏆</Text>
             </View>
-            <Text style={{ fontSize: 17, fontWeight: '600', color: '#1a1a2e' }}>
+            <Text style={{ fontSize: 17, fontWeight: '600', color: '#0f172a' }}>
               {t('noMatchYet')}
             </Text>
-            <Text style={{ fontSize: 13, color: '#999', marginTop: 6, textAlign: 'center', lineHeight: 20 }}>
+            <Text style={{ fontSize: 13, color: '#64748b', marginTop: 6, textAlign: 'center', lineHeight: 20 }}>
               {t('startFirst')}
             </Text>
           </View>

@@ -50,14 +50,12 @@ export default function Selection() {
   const nbPresents = presents.size
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
+    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{
-        backgroundColor: '#1a1a2e',
-        paddingTop: 44,
+        backgroundColor: '#1e3a5f',
+        paddingTop: 48,
         paddingHorizontal: 20,
-        paddingBottom: 24,
-        borderBottomLeftRadius: 22,
-        borderBottomRightRadius: 22,
+        paddingBottom: 28,
       }}>
         <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 8 }}>
           <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>←</Text>
@@ -72,7 +70,7 @@ export default function Selection() {
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
 
-        <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>
+        <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20 }}>
           Nombre d'équipes
         </Text>
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 20 }}>
@@ -82,15 +80,15 @@ export default function Selection() {
               onPress={() => setNbEquipes(n)}
               style={{
                 paddingHorizontal: 20, paddingVertical: 10,
-                borderRadius: 20,
-                backgroundColor: nbEquipes === n ? '#1a1a2e' : '#fff',
-                borderWidth: 0.5,
-                borderColor: nbEquipes === n ? '#1a1a2e' : 'rgba(0,0,0,0.1)',
+                borderRadius: 10,
+                backgroundColor: nbEquipes === n ? '#2563eb' : '#ffffff',
+                borderWidth: 1,
+                borderColor: nbEquipes === n ? '#2563eb' : '#e2e8f0',
               }}
             >
               <Text style={{
                 fontSize: 13, fontWeight: '500',
-                color: nbEquipes === n ? '#fff' : '#666',
+                color: nbEquipes === n ? '#fff' : '#64748b',
               }}>
                 {n} équipes
               </Text>
@@ -98,7 +96,7 @@ export default function Selection() {
           ))}
         </View>
 
-        <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>
+        <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20 }}>
           Joueurs
         </Text>
 
@@ -107,15 +105,18 @@ export default function Selection() {
             key={joueur.id}
             onPress={() => togglePresent(joueur.id)}
             style={{
-              backgroundColor: '#fff',
-              borderRadius: 12,
+              backgroundColor: '#ffffff',
+              borderRadius: 14,
               padding: 12,
               marginBottom: 6,
               flexDirection: 'row',
               alignItems: 'center',
               gap: 10,
-              borderWidth: 0.5,
-              borderColor: presents.has(joueur.id) ? '#1a1a2e' : 'rgba(0,0,0,0.07)',
+              shadowColor: '#0f172a',
+              shadowOpacity: 0.06,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 2 },
+              elevation: 2,
               opacity: presents.has(joueur.id) ? 1 : 0.4,
             }}
           >
@@ -124,21 +125,21 @@ export default function Selection() {
               backgroundColor: joueur.couleur_avatar,
               alignItems: 'center', justifyContent: 'center',
             }}>
-              <Text style={{ fontSize: 12, fontWeight: '500', color: '#185FA5' }}>
+              <Text style={{ fontSize: 12, fontWeight: '500', color: '#2563eb' }}>
                 {joueur.prenom.substring(0,2).toUpperCase()}
               </Text>
             </View>
-            <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: '#1a1a2e' }}>
+            <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: '#0f172a' }}>
               {joueur.prenom} {joueur.nom}
             </Text>
-            <Text style={{ fontSize: 12, color: '#999' }}>
+            <Text style={{ fontSize: 12, color: '#f59e0b' }}>
               {'★'.repeat(Math.round(joueur.note_moyenne))}
             </Text>
             <View style={{
               width: 20, height: 20, borderRadius: 10,
-              backgroundColor: presents.has(joueur.id) ? '#1a1a2e' : 'transparent',
+              backgroundColor: presents.has(joueur.id) ? '#2563eb' : '#ffffff',
               borderWidth: 1.5,
-              borderColor: presents.has(joueur.id) ? '#1a1a2e' : '#ccc',
+              borderColor: presents.has(joueur.id) ? '#2563eb' : '#e2e8f0',
               alignItems: 'center', justifyContent: 'center',
             }}>
               {presents.has(joueur.id) && (
@@ -152,7 +153,7 @@ export default function Selection() {
           onPress={handleGenerer}
           disabled={nbPresents < 4}
           style={{
-            backgroundColor: nbPresents >= 4 ? '#1a1a2e' : '#ccc',
+            backgroundColor: nbPresents >= 4 ? '#22c55e' : '#e2e8f0',
             borderRadius: 14,
             padding: 14,
             alignItems: 'center',
@@ -162,8 +163,8 @@ export default function Selection() {
             marginTop: 16,
           }}
         >
-          <Play size={16} color="#fff" />
-          <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
+          <Play size={16} color={nbPresents >= 4 ? '#fff' : '#94a3b8'} />
+          <Text style={{ color: nbPresents >= 4 ? '#fff' : '#94a3b8', fontSize: 14, fontWeight: '500' }}>
             Générer les équipes
           </Text>
         </TouchableOpacity>

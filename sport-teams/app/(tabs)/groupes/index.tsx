@@ -16,20 +16,18 @@ export default function Groupes() {
   )
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
+    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{
-        backgroundColor: '#1a1a2e',
-        paddingTop: 44,
+        backgroundColor: '#1e3a5f',
+        paddingTop: 48,
         paddingHorizontal: 20,
-        paddingBottom: 24,
-        borderBottomLeftRadius: 22,
-        borderBottomRightRadius: 22,
+        paddingBottom: 28,
       }}>
         <View>
-          <Text style={{ color: '#fff', fontSize: 22, fontWeight: '500' }}>
+          <Text style={{ color: '#fff', fontSize: 26, fontWeight: '700' }}>
             {t('hello')}
           </Text>
-          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, marginTop: 4 }}>
+          <Text style={{ color: '#94a3b8', fontSize: 14, marginTop: 4 }}>
             {groupes.length} {t('activeGroups')}
           </Text>
         </View>
@@ -38,8 +36,11 @@ export default function Groupes() {
           <TouchableOpacity
             onPress={() => router.push('/(tabs)/groupes/new')}
             style={{
-              flex: 1, backgroundColor: '#185FA5',
-              borderRadius: 12, paddingVertical: 11,
+              flex: 1,
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.25)',
+              borderRadius: 14, paddingVertical: 14,
               flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
             }}
           >
@@ -49,8 +50,11 @@ export default function Groupes() {
           <TouchableOpacity
             onPress={() => router.push('/(tabs)/groupes/rejoindre')}
             style={{
-              flex: 1, backgroundColor: 'rgba(255,255,255,0.12)',
-              borderRadius: 12, paddingVertical: 11,
+              flex: 1,
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.25)',
+              borderRadius: 14, paddingVertical: 14,
               alignItems: 'center', justifyContent: 'center',
             }}
           >
@@ -62,8 +66,8 @@ export default function Groupes() {
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
 
         <Text style={{
-          fontSize: 11, fontWeight: '500', color: '#888',
-          textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10,
+          fontSize: 11, fontWeight: '700', color: '#94a3b8',
+          textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20,
         }}>
           {t('myGroups')}
         </Text>
@@ -74,56 +78,64 @@ export default function Groupes() {
               key={groupe.id}
               onPress={() => router.push(`/(tabs)/groupes/${groupe.id}`)}
               style={{
-                backgroundColor: '#fff',
-                borderRadius: 14,
-                padding: 14,
+                backgroundColor: '#ffffff',
+                borderRadius: 16,
+                padding: 16,
                 marginBottom: 8,
                 flexDirection: 'row',
                 alignItems: 'center',
-                gap: 12,
-                borderWidth: 0.5,
-                borderColor: 'rgba(0,0,0,0.07)',
+                gap: 14,
+                shadowColor: '#0f172a',
+                shadowOpacity: 0.06,
+                shadowRadius: 8,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
               }}
             >
               <View style={{
                 width: 42, height: 42,
-                borderRadius: 12,
-                backgroundColor: '#E6F1FB',
+                borderRadius: 14,
+                backgroundColor: '#eff6ff',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
                 <Text style={{ fontSize: 22 }}>{groupe.emoji}</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 14, fontWeight: '500', color: '#1a1a2e' }}>
+                <Text style={{ fontSize: 14, fontWeight: '500', color: '#0f172a' }}>
                   {groupe.nom}
                 </Text>
-                <Text style={{ fontSize: 12, color: '#999', marginTop: 2 }}>
+                <Text style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
                   {groupe.sport}
                 </Text>
               </View>
               <View style={{
-                backgroundColor: '#E6F1FB',
+                backgroundColor: '#dcfce7',
                 paddingHorizontal: 8, paddingVertical: 3,
                 borderRadius: 20,
               }}>
-                <Text style={{ fontSize: 10, fontWeight: '500', color: '#185FA5' }}>
+                <Text style={{ fontSize: 11, fontWeight: '500', color: '#16a34a' }}>
                   {t('active')}
                 </Text>
               </View>
+              <Text style={{ color: '#94a3b8', fontSize: 18 }}>›</Text>
             </TouchableOpacity>
           ))
         ) : !loading ? (
           <View style={{
-            backgroundColor: '#fff', borderRadius: 16, padding: 40,
+            backgroundColor: '#ffffff', borderRadius: 16, padding: 40,
             alignItems: 'center', marginTop: 8,
-            borderWidth: 0.5, borderColor: 'rgba(0,0,0,0.07)',
+            shadowColor: '#0f172a',
+            shadowOpacity: 0.06,
+            shadowRadius: 8,
+            shadowOffset: { width: 0, height: 2 },
+            elevation: 2,
           }}>
-            <Text style={{ fontSize: 48, marginBottom: 12 }}>⚽</Text>
-            <Text style={{ fontSize: 16, fontWeight: '500', color: '#1a1a2e' }}>
+            <Text style={{ fontSize: 64, marginBottom: 12 }}>⚽</Text>
+            <Text style={{ fontSize: 16, fontWeight: '500', color: '#0f172a' }}>
               {t('noGroups')}
             </Text>
-            <Text style={{ fontSize: 13, color: '#999', marginTop: 4 }}>
+            <Text style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>
               {t('createFirst')}
             </Text>
           </View>

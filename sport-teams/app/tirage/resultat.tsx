@@ -7,8 +7,8 @@ import { cacheInvalidate } from '../../lib/cache'
 import { useEffect, useRef, useState } from 'react'
 import { Equipe, Joueur } from '../../types'
 
-const COULEURS_EQUIPES = ['#185FA5', '#0F6E56', '#854F0B', '#534AB7']
-const COULEURS_TERRAIN = ['#1565C0', '#2E7D32', '#E65100', '#6A1B9A']
+const COULEURS_EQUIPES = ['#2563eb', '#22c55e', '#f59e0b', '#8b5cf6']
+const COULEURS_TERRAIN = ['#1d4ed8', '#16a34a', '#d97706', '#7c3aed']
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 const TERRAIN_W = SCREEN_WIDTH - 32
@@ -300,14 +300,12 @@ export default function Resultat() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
+    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{
-        backgroundColor: '#1a1a2e',
-        paddingTop: 44,
+        backgroundColor: '#1e3a5f',
+        paddingTop: 48,
         paddingHorizontal: 20,
         paddingBottom: 24,
-        borderBottomLeftRadius: 22,
-        borderBottomRightRadius: 22,
       }}>
         <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 8 }}>
           <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>←</Text>
@@ -332,7 +330,7 @@ export default function Resultat() {
                 backgroundColor: vue === 'liste' ? '#fff' : 'transparent',
               }}
             >
-              <Text style={{ fontSize: 12, fontWeight: '600', color: vue === 'liste' ? '#1a1a2e' : 'rgba(255,255,255,0.7)' }}>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: vue === 'liste' ? '#0f172a' : 'rgba(255,255,255,0.7)' }}>
                 Liste
               </Text>
             </TouchableOpacity>
@@ -343,7 +341,7 @@ export default function Resultat() {
                 backgroundColor: vue === 'terrain' ? '#fff' : 'transparent',
               }}
             >
-              <Text style={{ fontSize: 12, fontWeight: '600', color: vue === 'terrain' ? '#1a1a2e' : 'rgba(255,255,255,0.7)' }}>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: vue === 'terrain' ? '#0f172a' : 'rgba(255,255,255,0.7)' }}>
                 ⛳ Terrain
               </Text>
             </TouchableOpacity>
@@ -363,7 +361,7 @@ export default function Resultat() {
             {equipes.map((eq, i) => (
               <View key={i} style={{
                 flex: eq.totalPoints,
-                backgroundColor: i === 0 ? '#378ADD' : i === 1 ? '#34d399' : i === 2 ? '#EF9F27' : '#AFA9EC',
+                backgroundColor: ['#2563eb', '#22c55e', '#f59e0b', '#8b5cf6'][i] || '#2563eb',
               }} />
             ))}
           </View>
@@ -374,15 +372,20 @@ export default function Resultat() {
         {vue === 'liste' ? (
           equipes.map((eq, i) => (
             <View key={i} style={{
-              backgroundColor: '#fff', borderRadius: 14, marginBottom: 10,
-              overflow: 'hidden', borderWidth: 0.5, borderColor: 'rgba(0,0,0,0.07)',
+              backgroundColor: '#ffffff', borderRadius: 16, marginBottom: 10,
+              overflow: 'hidden',
+              shadowColor: '#0f172a',
+              shadowOpacity: 0.06,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 2 },
+              elevation: 2,
             }}>
               <View style={{
-                backgroundColor: `${COULEURS_EQUIPES[i]}20`, padding: 10,
+                backgroundColor: `${COULEURS_EQUIPES[i]}15`, padding: 10,
                 flexDirection: 'row', alignItems: 'center',
               }}>
                 <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: COULEURS_EQUIPES[i] }}>{eq.nom}</Text>
-                <Text style={{ fontSize: 11, color: '#999' }}>{eq.totalPoints.toFixed(1)} pts</Text>
+                <Text style={{ fontSize: 11, color: '#64748b' }}>{eq.totalPoints.toFixed(1)} pts</Text>
               </View>
               <View style={{ padding: 10 }}>
                 {eq.joueurs.map(j => (
@@ -392,17 +395,17 @@ export default function Resultat() {
                       backgroundColor: j.couleur_avatar,
                       alignItems: 'center', justifyContent: 'center',
                     }}>
-                      <Text style={{ fontSize: 9, fontWeight: '500', color: '#185FA5' }}>{j.prenom.substring(0,2).toUpperCase()}</Text>
+                      <Text style={{ fontSize: 9, fontWeight: '500', color: '#2563eb' }}>{j.prenom.substring(0,2).toUpperCase()}</Text>
                     </View>
-                    <Text style={{ flex: 1, fontSize: 12, color: '#1a1a2e' }}>{j.prenom} {j.nom}</Text>
+                    <Text style={{ flex: 1, fontSize: 12, color: '#0f172a' }}>{j.prenom} {j.nom}</Text>
                     <Text style={{
-                      fontSize: 10, fontWeight: '500', color: '#888',
-                      backgroundColor: '#F1EFE8', paddingHorizontal: 6, paddingVertical: 2,
+                      fontSize: 10, fontWeight: '500', color: '#64748b',
+                      backgroundColor: '#f1f5f9', paddingHorizontal: 6, paddingVertical: 2,
                       borderRadius: 8, textAlign: 'center',
                     }}>
                       {j.poste || 'N/A'}
                     </Text>
-                    <Text style={{ fontSize: 11, color: '#999' }}>{'★'.repeat(Math.round(j.note_moyenne))}</Text>
+                    <Text style={{ fontSize: 11, color: '#f59e0b' }}>{'★'.repeat(Math.round(j.note_moyenne))}</Text>
                   </View>
                 ))}
               </View>
@@ -415,13 +418,13 @@ export default function Resultat() {
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
           <TouchableOpacity
             onPress={handleRelancer}
-            style={{ flex: 1, backgroundColor: '#F1EFE8', borderRadius: 14, padding: 14, alignItems: 'center' }}
+            style={{ flex: 1, backgroundColor: '#f1f5f9', borderRadius: 14, padding: 14, alignItems: 'center' }}
           >
-            <Text style={{ color: '#1a1a2e', fontSize: 14, fontWeight: '500' }}>Relancer</Text>
+            <Text style={{ color: '#0f172a', fontSize: 14, fontWeight: '500' }}>Relancer</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handlePartager}
-            style={{ flex: 1, backgroundColor: '#1a1a2e', borderRadius: 14, padding: 14, alignItems: 'center' }}
+            style={{ flex: 1, backgroundColor: '#2563eb', borderRadius: 14, padding: 14, alignItems: 'center' }}
           >
             <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>Partager</Text>
           </TouchableOpacity>

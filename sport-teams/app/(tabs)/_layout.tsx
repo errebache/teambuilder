@@ -8,14 +8,14 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#fff',
-          borderTopWidth: 0.5,
-          borderTopColor: 'rgba(0,0,0,0.07)',
-          height: 60,
-          paddingBottom: 8,
+          backgroundColor: '#ffffff',
+          borderTopWidth: 1,
+          borderTopColor: '#e2e8f0',
+          height: 64,
+          paddingBottom: 10,
         },
-        tabBarActiveTintColor: '#1a1a2e',
-        tabBarInactiveTintColor: '#bbb',
+        tabBarActiveTintColor: '#2563eb',
+        tabBarInactiveTintColor: '#94a3b8',
         tabBarShowLabel: false,
       }}
     >
@@ -26,7 +26,7 @@ export default function TabsLayout() {
             <View style={{ alignItems: 'center', gap: 3 }}>
               <LayoutGrid size={20} color={color} />
               {focused && (
-                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#1a1a2e' }} />
+                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#2563eb' }} />
               )}
             </View>
           ),
@@ -45,7 +45,7 @@ export default function TabsLayout() {
             <View style={{ alignItems: 'center', gap: 3 }}>
               <Users size={20} color={color} />
               {focused && (
-                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#1a1a2e' }} />
+                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#2563eb' }} />
               )}
             </View>
           ),
@@ -64,7 +64,7 @@ export default function TabsLayout() {
             <View style={{ alignItems: 'center', gap: 3 }}>
               <Clock size={20} color={color} />
               {focused && (
-                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#1a1a2e' }} />
+                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#2563eb' }} />
               )}
             </View>
           ),
@@ -83,7 +83,7 @@ export default function TabsLayout() {
             <View style={{ alignItems: 'center', gap: 3 }}>
               <Settings size={20} color={color} />
               {focused && (
-                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#1a1a2e' }} />
+                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#2563eb' }} />
               )}
             </View>
           ),

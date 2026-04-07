@@ -105,22 +105,34 @@ export default function DetailGroupe() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAF9', paddingBottom: 80 }}>
+    <View style={{ flex: 1, backgroundColor: '#f8fafc', paddingBottom: 80 }}>
       <View style={{
-        backgroundColor: '#1a1a2e',
-        paddingTop: 44,
+        backgroundColor: '#1e3a5f',
+        paddingTop: 48,
         paddingHorizontal: 20,
-        paddingBottom: 24,
-        borderBottomLeftRadius: 22,
-        borderBottomRightRadius: 22,
+        paddingBottom: 28,
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-          <TouchableOpacity onPress={() => router.replace('/(tabs)/groupes')}>
-            <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>←</Text>
+          <TouchableOpacity
+            onPress={() => router.replace('/(tabs)/groupes')}
+            style={{
+              width: 36, height: 36, borderRadius: 18,
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <Text style={{ color: '#fff', fontSize: 16 }}>←</Text>
           </TouchableOpacity>
           <View style={{ flex: 1 }} />
-          <TouchableOpacity onPress={handleSupprimer}>
-            <Trash2 size={18} color="rgba(255,255,255,0.5)" />
+          <TouchableOpacity
+            onPress={handleSupprimer}
+            style={{
+              width: 36, height: 36, borderRadius: 18,
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <Trash2 size={18} color="rgba(255,255,255,0.8)" />
           </TouchableOpacity>
         </View>
 
@@ -138,7 +150,7 @@ export default function DetailGroupe() {
               flexDirection: 'row',
               alignItems: 'center',
               gap: 6,
-              backgroundColor: 'rgba(255,255,255,0.15)',
+              backgroundColor: 'rgba(255,255,255,0.18)',
               paddingHorizontal: 14,
               paddingVertical: 7,
               borderRadius: 20,
@@ -156,8 +168,8 @@ export default function DetailGroupe() {
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
         <Text style={{
-          fontSize: 11, fontWeight: '500', color: '#888',
-          textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10,
+          fontSize: 11, fontWeight: '700', color: '#94a3b8',
+          textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20,
         }}>
           {t('players')}
         </Text>
@@ -168,15 +180,18 @@ export default function DetailGroupe() {
               key={joueur.id}
               onPress={() => router.push(`/(tabs)/joueurs/${joueur.id}?from=groupe&groupeId=${id}`)}
               style={{
-                backgroundColor: '#fff',
-                borderRadius: 12,
+                backgroundColor: '#ffffff',
+                borderRadius: 14,
                 padding: 12,
                 marginBottom: 6,
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 10,
-                borderWidth: 0.5,
-                borderColor: 'rgba(0,0,0,0.07)',
+                shadowColor: '#0f172a',
+                shadowOpacity: 0.06,
+                shadowRadius: 8,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
               }}
             >
               <View style={{
@@ -186,26 +201,26 @@ export default function DetailGroupe() {
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-                <Text style={{ fontSize: 12, fontWeight: '500', color: '#185FA5' }}>
+                <Text style={{ fontSize: 12, fontWeight: '500', color: '#2563eb' }}>
                   {joueur.prenom.substring(0,2).toUpperCase()}
                 </Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 13, fontWeight: '500', color: '#1a1a2e' }}>
+                <Text style={{ fontSize: 13, fontWeight: '500', color: '#0f172a' }}>
                   {joueur.prenom} {joueur.nom}
                 </Text>
-                <Text style={{ fontSize: 11, color: '#999', marginTop: 1 }}>
+                <Text style={{ fontSize: 11, color: '#64748b', marginTop: 1 }}>
                   {joueur.poste || 'Joueur'}
                 </Text>
               </View>
-              <Text style={{ fontSize: 12, color: '#999' }}>
+              <Text style={{ fontSize: 12, color: '#f59e0b' }}>
                 {'★'.repeat(Math.round(joueur.note_moyenne))}
               </Text>
             </TouchableOpacity>
           ))
         ) : hasFetched ? (
           <View style={{ alignItems: 'center', marginTop: 40, marginBottom: 20 }}>
-            <Text style={{ fontSize: 13, color: '#999' }}>
+            <Text style={{ fontSize: 13, color: '#64748b' }}>
               {t('noPlayersYet')}
             </Text>
           </View>
@@ -217,13 +232,13 @@ export default function DetailGroupe() {
       <View style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
         flexDirection: 'row', gap: 10,
-        padding: 16, backgroundColor: '#FAFAF9',
-        borderTopWidth: 0.5, borderTopColor: 'rgba(0,0,0,0.07)',
+        padding: 16, backgroundColor: '#f8fafc',
+        borderTopWidth: 1, borderTopColor: '#e2e8f0',
       }}>
         <TouchableOpacity
           onPress={() => router.push(`/(tabs)/joueurs/new?groupeId=${id}`)}
           style={{
-            flex: 1, backgroundColor: '#1a1a2e',
+            flex: 1, backgroundColor: '#2563eb',
             borderRadius: 14, paddingVertical: 14,
             flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
           }}
@@ -236,13 +251,13 @@ export default function DetailGroupe() {
           onPress={() => router.push(`/tirage/selection?groupeId=${id}`)}
           disabled={joueurs.length < 4}
           style={{
-            flex: 1, backgroundColor: joueurs.length >= 4 ? '#1DB954' : '#ccc',
+            flex: 1, backgroundColor: joueurs.length >= 4 ? '#22c55e' : '#e2e8f0',
             borderRadius: 14, paddingVertical: 14,
             flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
           }}
         >
-          <Play size={15} color="#fff" />
-          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>
+          <Play size={15} color={joueurs.length >= 4 ? '#fff' : '#94a3b8'} />
+          <Text style={{ color: joueurs.length >= 4 ? '#fff' : '#94a3b8', fontSize: 13, fontWeight: '500' }}>
             {joueurs.length < 4 ? `Encore ${4 - joueurs.length}` : t('generateTeams')}
           </Text>
         </TouchableOpacity>

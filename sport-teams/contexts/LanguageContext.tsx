@@ -167,6 +167,10 @@ const translations: Record<LangCode, Record<string, string>> = {
     tagRegulier: 'Régulier',
     tagAgressif: 'Agressif',
     tagFairPlay: 'Fair-play',
+    // Theme modes
+    themeLight: 'Clair',
+    themeDark: 'Sombre',
+    themeSystem: 'Système',
   },
   en: {
     groups: 'Groups',
@@ -324,6 +328,10 @@ const translations: Record<LangCode, Record<string, string>> = {
     tagRegulier: 'Consistent',
     tagAgressif: 'Aggressive',
     tagFairPlay: 'Fair play',
+    // Theme modes
+    themeLight: 'Light',
+    themeDark: 'Dark',
+    themeSystem: 'System',
   },
   ar: {
     groups: 'المجموعات',
@@ -481,6 +489,10 @@ const translations: Record<LangCode, Record<string, string>> = {
     tagRegulier: 'منتظم',
     tagAgressif: 'عدواني',
     tagFairPlay: 'لعب نظيف',
+    // Theme modes
+    themeLight: 'فاتح',
+    themeDark: 'داكن',
+    themeSystem: 'تلقائي',
   },
   es: {
     groups: 'Grupos',
@@ -638,6 +650,10 @@ const translations: Record<LangCode, Record<string, string>> = {
     tagRegulier: 'Regular',
     tagAgressif: 'Agresivo',
     tagFairPlay: 'Juego limpio',
+    // Theme modes
+    themeLight: 'Claro',
+    themeDark: 'Oscuro',
+    themeSystem: 'Sistema',
   },
   de: {
     groups: 'Gruppen',
@@ -795,6 +811,10 @@ const translations: Record<LangCode, Record<string, string>> = {
     tagRegulier: 'Beständig',
     tagAgressif: 'Aggressiv',
     tagFairPlay: 'Faires Spiel',
+    // Theme modes
+    themeLight: 'Hell',
+    themeDark: 'Dunkel',
+    themeSystem: 'System',
   },
   pt: {
     groups: 'Grupos',
@@ -952,6 +972,10 @@ const translations: Record<LangCode, Record<string, string>> = {
     tagRegulier: 'Regular',
     tagAgressif: 'Agressivo',
     tagFairPlay: 'Jogo limpo',
+    // Theme modes
+    themeLight: 'Claro',
+    themeDark: 'Escuro',
+    themeSystem: 'Sistema',
   },
 }
 

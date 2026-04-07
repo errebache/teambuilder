@@ -4,6 +4,7 @@ import { useRouter, useFocusEffect } from 'expo-router'
 import { supabase } from '../../../lib/supabase'
 import { Joueur } from '../../../types'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import { textAlign } from '../../../lib/rtl'
 
 type JoueurAvecGroupe = Joueur & {
   groupes: { nom: string; emoji: string } | null
@@ -11,7 +12,7 @@ type JoueurAvecGroupe = Joueur & {
 
 export default function Joueurs() {
   const router = useRouter()
-  const { t } = useLanguage()
+  const { t, isRTL } = useLanguage()
   const [joueurs, setJoueurs] = useState<JoueurAvecGroupe[]>([])
   const [loading, setLoading] = useState(false)
   const [recherche, setRecherche] = useState('')
@@ -63,14 +64,12 @@ export default function Joueurs() {
   const podiumPos = top3.length === 3 ? [2, 1, 3] : [1, 2, 3]
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
+    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{
-        backgroundColor: '#1a1a2e',
-        paddingTop: 44,
+        backgroundColor: '#1e3a5f',
+        paddingTop: 48,
         paddingHorizontal: 20,
         paddingBottom: 20,
-        borderBottomLeftRadius: 22,
-        borderBottomRightRadius: 22,
       }}>
         <Text style={{ color: '#fff', fontSize: 22, fontWeight: '500' }}>
           {t('players')}
@@ -89,7 +88,7 @@ export default function Joueurs() {
             onChangeText={setRecherche}
             placeholder={t('searchPlayer')}
             placeholderTextColor="rgba(255,255,255,0.4)"
-            style={{ flex: 1, color: '#fff', fontSize: 14, paddingVertical: 10 }}
+            style={{ flex: 1, color: '#fff', fontSize: 14, paddingVertical: 10, textAlign: textAlign(isRTL) }}
           />
         </View>
       </View>
@@ -100,7 +99,7 @@ export default function Joueurs() {
             {/* TOP 3 podium */}
             {!recherche && top3.length >= 2 && (
               <View style={{ marginBottom: 20 }}>
-                <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12, marginTop: 20 }}>
                   🏆 TOP
                 </Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', gap: 12 }}>
@@ -114,21 +113,21 @@ export default function Joueurs() {
                         onPress={() => router.push(`/(tabs)/joueurs/${j.id}`)}
                         style={{ alignItems: 'center', width: 80 }}
                       >
-                        <Text style={{ fontSize: 16, marginBottom: 4 }}>{medals[pos - 1]}</Text>
+                        <Text style={{ fontSize: 20, marginBottom: 4 }}>{medals[pos - 1]}</Text>
                         <View style={{
                           width: 48, height: 48, borderRadius: 24,
                           backgroundColor: j.couleur_avatar,
                           alignItems: 'center', justifyContent: 'center',
                           marginBottom: 6,
                         }}>
-                          <Text style={{ fontSize: 14, fontWeight: '600', color: '#185FA5' }}>
+                          <Text style={{ fontSize: 14, fontWeight: '600', color: '#2563eb' }}>
                             {j.prenom.substring(0,2).toUpperCase()}
                           </Text>
                         </View>
-                        <Text style={{ fontSize: 11, fontWeight: '500', color: '#1a1a2e', textAlign: 'center' }} numberOfLines={1}>
+                        <Text style={{ fontSize: 11, fontWeight: '500', color: '#0f172a', textAlign: 'center' }} numberOfLines={1}>
                           {j.prenom}
                         </Text>
-                        <Text style={{ fontSize: 10, color: '#c8a400' }}>
+                        <Text style={{ fontSize: 10, color: '#f59e0b' }}>
                           {'★'.repeat(Math.round(j.note_moyenne))}{'☆'.repeat(5 - Math.round(j.note_moyenne))} {j.note_moyenne.toFixed(1)}
                         </Text>
                       </TouchableOpacity>
@@ -139,7 +138,7 @@ export default function Joueurs() {
             )}
 
             {/* Liste complète */}
-            <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>
+            <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20 }}>
               {filtrés.length} JOUEURS
             </Text>
 
@@ -148,15 +147,18 @@ export default function Joueurs() {
                 key={joueur.id}
                 onPress={() => router.push(`/(tabs)/joueurs/${joueur.id}`)}
                 style={{
-                  backgroundColor: '#fff',
-                  borderRadius: 12,
+                  backgroundColor: '#ffffff',
+                  borderRadius: 14,
                   padding: 12,
                   marginBottom: 6,
                   flexDirection: 'row',
                   alignItems: 'center',
                   gap: 10,
-                  borderWidth: 0.5,
-                  borderColor: 'rgba(0,0,0,0.07)',
+                  shadowColor: '#0f172a',
+                  shadowOpacity: 0.06,
+                  shadowRadius: 8,
+                  shadowOffset: { width: 0, height: 2 },
+                  elevation: 2,
                 }}
               >
                 <View style={{
@@ -164,37 +166,37 @@ export default function Joueurs() {
                   backgroundColor: joueur.couleur_avatar,
                   alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <Text style={{ fontSize: 13, fontWeight: '600', color: '#185FA5' }}>
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: '#2563eb' }}>
                     {joueur.prenom.substring(0,2).toUpperCase()}
                   </Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 13, fontWeight: '500', color: '#1a1a2e' }}>
+                  <Text style={{ fontSize: 13, fontWeight: '500', color: '#0f172a' }}>
                     {joueur.prenom} {joueur.nom}
                   </Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                    <Text style={{ fontSize: 11, color: '#999' }}>{joueur.poste || 'Joueur'}</Text>
+                    <Text style={{ fontSize: 11, color: '#64748b' }}>{joueur.poste || 'Joueur'}</Text>
                     {joueur.groupes && (
-                      <Text style={{ fontSize: 11, color: '#999' }}>
+                      <Text style={{ fontSize: 11, color: '#64748b' }}>
                         · {joueur.groupes.emoji} {joueur.groupes.nom}
                       </Text>
                     )}
                   </View>
                 </View>
-                <Text style={{ fontSize: 12, color: '#c8a400' }}>
+                <Text style={{ fontSize: 12, color: '#f59e0b' }}>
                   {'★'.repeat(Math.round(joueur.note_moyenne))}{'☆'.repeat(5 - Math.round(joueur.note_moyenne))}
                 </Text>
-                <Text style={{ fontSize: 12, color: '#ccc' }}>›</Text>
+                <Text style={{ fontSize: 18, color: '#94a3b8' }}>›</Text>
               </TouchableOpacity>
             ))}
           </>
         ) : !loading ? (
           <View style={{ alignItems: 'center', marginTop: 60 }}>
             <Text style={{ fontSize: 40, marginBottom: 12 }}>👤</Text>
-            <Text style={{ fontSize: 16, fontWeight: '500', color: '#1a1a2e' }}>
+            <Text style={{ fontSize: 16, fontWeight: '500', color: '#0f172a' }}>
               {t('noPlayers')}
             </Text>
-            <Text style={{ fontSize: 13, color: '#999', marginTop: 4, textAlign: 'center' }}>
+            <Text style={{ fontSize: 13, color: '#64748b', marginTop: 4, textAlign: 'center' }}>
               {t('addPlayersFromGroup')}
             </Text>
           </View>

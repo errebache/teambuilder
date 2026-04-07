@@ -120,7 +120,7 @@ export default function LaisserAvis() {
     }
   }
 
-  if (!joueur) return <View style={{ flex: 1, backgroundColor: '#1a1a2e' }} />
+  if (!joueur) return <View style={{ flex: 1, backgroundColor: '#1e3a5f' }} />
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -148,7 +148,7 @@ export default function LaisserAvis() {
           borderWidth: 2, borderColor: 'rgba(255,255,255,0.2)',
           marginBottom: 10,
         }}>
-          <Text style={{ fontSize: 18, fontWeight: '600', color: '#185FA5' }}>
+          <Text style={{ fontSize: 18, fontWeight: '600', color: '#2563eb' }}>
             {joueur.prenom.substring(0, 2).toUpperCase() || '?'}
           </Text>
         </View>

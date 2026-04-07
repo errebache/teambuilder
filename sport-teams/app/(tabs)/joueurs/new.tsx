@@ -6,6 +6,7 @@ import { supabase } from '../../../lib/supabase'
 import { cacheInvalidate } from '../../../lib/cache'
 import { Qualites } from '../../../types'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import { textAlign, arrow } from '../../../lib/rtl'
 
 const POSTES: Record<string, string[]> = {
   Football: ['Gardien', 'Défenseur', 'Milieu', 'Attaquant'],
@@ -36,7 +37,7 @@ function moyenne(q: Qualites): number {
 
 export default function NewJoueur() {
   const router = useRouter()
-  const { t } = useLanguage()
+  const { t, isRTL } = useLanguage()
   const { groupeId } = useLocalSearchParams()
   const [username, setUsername] = useState('')
   const [sport, setSport] = useState('Football')
@@ -86,16 +87,15 @@ export default function NewJoueur() {
   const initiales = username.trim().substring(0, 2).toUpperCase()
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
+    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{
-        backgroundColor: '#1a1a2e',
-        paddingTop: 44, paddingHorizontal: 20, paddingBottom: 24,
-        borderBottomLeftRadius: 22, borderBottomRightRadius: 22,
+        backgroundColor: '#1e3a5f',
+        paddingTop: 48, paddingHorizontal: 20, paddingBottom: 28,
       }}>
         <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 8 }}>
-          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>←</Text>
+          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>{arrow(isRTL)}</Text>
         </TouchableOpacity>
-        <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500' }}>{t('addPlayer')}</Text>
+        <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500', textAlign: textAlign(isRTL) }}>{t('addPlayer')}</Text>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
@@ -104,48 +104,52 @@ export default function NewJoueur() {
         <View style={{ alignItems: 'center', marginBottom: 16 }}>
           <View style={{
             width: 64, height: 64, borderRadius: 32,
-            backgroundColor: '#E6F1FB', alignItems: 'center', justifyContent: 'center',
-            borderWidth: 2, borderColor: '#B5D4F4', borderStyle: 'dashed',
+            backgroundColor: '#eff6ff', alignItems: 'center', justifyContent: 'center',
+            borderWidth: 2, borderColor: '#bfdbfe', borderStyle: 'dashed',
           }}>
-            <Text style={{ fontSize: 20, fontWeight: '500', color: '#185FA5' }}>{initiales || '+'}</Text>
+            <Text style={{ fontSize: 20, fontWeight: '500', color: '#2563eb' }}>{initiales || '+'}</Text>
           </View>
         </View>
 
         {/* Nom */}
-        <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>
-          Nom du joueur
+        <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20, textAlign: textAlign(isRTL) }}>
+          {t('firstName')}
         </Text>
         <TextInput
           value={username}
           onChangeText={setUsername}
-          placeholder="Ex: Driss, Toto Titi..."
-          placeholderTextColor="#ccc"
+          placeholder={t('firstName')}
+          placeholderTextColor="#94a3b8"
           style={{
-            backgroundColor: '#fff', borderRadius: 12,
-            padding: 12, fontSize: 14, color: '#1a1a2e',
-            borderWidth: 0.5, borderColor: 'rgba(0,0,0,0.1)', marginBottom: 20,
+            backgroundColor: '#ffffff', borderRadius: 12,
+            padding: 12, fontSize: 14, color: '#0f172a',
+            borderWidth: 1, borderColor: '#e2e8f0', marginBottom: 20,
+            textAlign: textAlign(isRTL),
           }}
         />
 
         {/* Qualités */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1 }}>
             Qualités
           </Text>
-          <View style={{ backgroundColor: '#E6F1FB', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 }}>
-            <Text style={{ fontSize: 11, fontWeight: '600', color: '#185FA5' }}>
+          <View style={{ backgroundColor: '#eff6ff', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 }}>
+            <Text style={{ fontSize: 11, fontWeight: '600', color: '#2563eb' }}>
               Moy. {moyenne(qualites).toFixed(1)} / 5
             </Text>
           </View>
         </View>
 
-        <View style={{ backgroundColor: '#fff', borderRadius: 14, padding: 16, marginBottom: 20, borderWidth: 0.5, borderColor: 'rgba(0,0,0,0.07)' }}>
+        <View style={{
+          backgroundColor: '#ffffff', borderRadius: 14, padding: 16, marginBottom: 20,
+          shadowColor: '#0f172a', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2,
+        }}>
           {QUALITES_DEF.map((q, idx) => (
             <View key={q.key} style={{ marginBottom: idx < QUALITES_DEF.length - 1 ? 16 : 0 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
                 <Text style={{ fontSize: 15, marginRight: 6 }}>{q.emoji}</Text>
-                <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: '#1a1a2e' }}>{q.label}</Text>
-                <Text style={{ fontSize: 12, color: '#888' }}>{qualites[q.key]} / 5</Text>
+                <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: '#0f172a' }}>{q.label}</Text>
+                <Text style={{ fontSize: 12, color: '#64748b' }}>{qualites[q.key]} / 5</Text>
               </View>
               <View style={{ flexDirection: 'row', gap: 6 }}>
                 {[1, 2, 3, 4, 5].map(n => (
@@ -154,7 +158,7 @@ export default function NewJoueur() {
                     onPress={() => setQ(q.key, n)}
                     style={{
                       flex: 1, height: 8, borderRadius: 4,
-                      backgroundColor: n <= qualites[q.key] ? '#1a1a2e' : '#E0DED6',
+                      backgroundColor: n <= qualites[q.key] ? '#2563eb' : '#e2e8f0',
                     }}
                   />
                 ))}
@@ -164,7 +168,7 @@ export default function NewJoueur() {
         </View>
 
         {/* Sport */}
-        <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>
+        <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20 }}>
           {t('sport')}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
@@ -174,17 +178,17 @@ export default function NewJoueur() {
               onPress={() => { setSport(s); setPoste('') }}
               style={{
                 paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
-                backgroundColor: sport === s ? '#1a1a2e' : '#fff',
-                borderWidth: 0.5, borderColor: sport === s ? '#1a1a2e' : 'rgba(0,0,0,0.1)',
+                backgroundColor: sport === s ? '#2563eb' : '#ffffff',
+                borderWidth: 1, borderColor: sport === s ? '#2563eb' : '#e2e8f0',
               }}
             >
-              <Text style={{ fontSize: 12, fontWeight: '500', color: sport === s ? '#fff' : '#666' }}>{s}</Text>
+              <Text style={{ fontSize: 12, fontWeight: '500', color: sport === s ? '#fff' : '#64748b' }}>{s}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Poste */}
-        <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>
+        <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20 }}>
           {t('position')}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
@@ -194,21 +198,21 @@ export default function NewJoueur() {
               onPress={() => setPoste(p)}
               style={{
                 paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
-                backgroundColor: poste === p ? '#1a1a2e' : '#fff',
-                borderWidth: 0.5, borderColor: poste === p ? '#1a1a2e' : 'rgba(0,0,0,0.1)',
+                backgroundColor: poste === p ? '#2563eb' : '#ffffff',
+                borderWidth: 1, borderColor: poste === p ? '#2563eb' : '#e2e8f0',
               }}
             >
-              <Text style={{ fontSize: 12, fontWeight: '500', color: poste === p ? '#fff' : '#666' }}>{p}</Text>
+              <Text style={{ fontSize: 12, fontWeight: '500', color: poste === p ? '#fff' : '#64748b' }}>{p}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {error ? <Text style={{ color: '#E24B4A', fontSize: 12, marginBottom: 12 }}>{error}</Text> : null}
+        {error ? <Text style={{ color: '#ef4444', fontSize: 12, marginBottom: 12 }}>{error}</Text> : null}
 
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={loading}
-          style={{ backgroundColor: '#1a1a2e', borderRadius: 14, padding: 14, alignItems: 'center', opacity: loading ? 0.6 : 1 }}
+          style={{ backgroundColor: '#2563eb', borderRadius: 14, padding: 14, alignItems: 'center', opacity: loading ? 0.6 : 1 }}
         >
           <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
             {loading ? t('addPlayerLoading') : t('addPlayer')}

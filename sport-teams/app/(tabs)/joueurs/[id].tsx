@@ -105,7 +105,7 @@ export default function ProfilJoueur() {
     })
   }
 
-  if (!joueur) return <View style={{ flex: 1, backgroundColor: '#1a1a2e' }} />
+  if (!joueur) return <View style={{ flex: 1, backgroundColor: '#1e3a5f' }} />
 
   const moyenneAvis = avis.length > 0
     ? avis.reduce((sum, a) => sum + a.note, 0) / avis.length
@@ -116,15 +116,13 @@ export default function ProfilJoueur() {
   const qualites = joueur.qualites
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
+    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
 
       <View style={{
-        backgroundColor: '#1a1a2e',
-        paddingTop: 44,
+        backgroundColor: '#1e3a5f',
+        paddingTop: 48,
         paddingHorizontal: 20,
         paddingBottom: 28,
-        borderBottomLeftRadius: 22,
-        borderBottomRightRadius: 22,
         alignItems: 'center',
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%', marginBottom: 16 }}>
@@ -153,10 +151,10 @@ export default function ProfilJoueur() {
           width: 64, height: 64, borderRadius: 32,
           backgroundColor: joueur.couleur_avatar,
           alignItems: 'center', justifyContent: 'center',
-          borderWidth: 2, borderColor: 'rgba(255,255,255,0.25)',
+          borderWidth: 2, borderColor: 'rgba(255,255,255,0.3)',
           marginBottom: 12,
         }}>
-          <Text style={{ fontSize: 22, fontWeight: '500', color: '#185FA5' }}>
+          <Text style={{ fontSize: 22, fontWeight: '500', color: '#2563eb' }}>
             {initiales}
           </Text>
         </View>
@@ -193,13 +191,18 @@ export default function ProfilJoueur() {
             { label: t('reviewsReceived'), value: avis.length },
           ].map((stat, i) => (
             <View key={i} style={{
-              flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 12,
-              alignItems: 'center', borderWidth: 0.5, borderColor: 'rgba(0,0,0,0.07)',
+              flex: 1, backgroundColor: '#ffffff', borderRadius: 14, padding: 12,
+              alignItems: 'center',
+              shadowColor: '#0f172a',
+              shadowOpacity: 0.06,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 2 },
+              elevation: 2,
             }}>
-              <Text style={{ fontSize: i === 1 ? 14 : 22, fontWeight: '500', color: i === 1 ? '#c8a400' : '#1a1a2e' }}>
+              <Text style={{ fontSize: i === 1 ? 14 : 22, fontWeight: '500', color: i === 1 ? '#f59e0b' : '#0f172a' }}>
                 {stat.value}
               </Text>
-              <Text style={{ fontSize: 10, color: '#999', marginTop: 3, textAlign: 'center' }}>{stat.label}</Text>
+              <Text style={{ fontSize: 10, color: '#64748b', marginTop: 3, textAlign: 'center' }}>{stat.label}</Text>
             </View>
           ))}
         </View>
@@ -208,23 +211,30 @@ export default function ProfilJoueur() {
         {qualites && (
           <>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1 }}>
                 Qualités
               </Text>
-              <View style={{ backgroundColor: '#E6F1FB', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 }}>
-                <Text style={{ fontSize: 11, fontWeight: '600', color: '#185FA5' }}>
+              <View style={{ backgroundColor: '#eff6ff', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 }}>
+                <Text style={{ fontSize: 11, fontWeight: '600', color: '#2563eb' }}>
                   Moy. {joueur.note_moyenne.toFixed(1)} / 5
                 </Text>
               </View>
             </View>
 
-            <View style={{ backgroundColor: '#fff', borderRadius: 14, padding: 16, marginBottom: 20, borderWidth: 0.5, borderColor: 'rgba(0,0,0,0.07)' }}>
+            <View style={{
+              backgroundColor: '#ffffff', borderRadius: 14, padding: 16, marginBottom: 20,
+              shadowColor: '#0f172a',
+              shadowOpacity: 0.06,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 2 },
+              elevation: 2,
+            }}>
               {QUALITES_DEF.map((q, idx) => (
                 <View key={q.key} style={{ marginBottom: idx < QUALITES_DEF.length - 1 ? 14 : 0 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
                     <Text style={{ fontSize: 14, marginRight: 6 }}>{q.emoji}</Text>
-                    <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: '#1a1a2e' }}>{q.label}</Text>
-                    <Text style={{ fontSize: 12, color: '#888', fontWeight: '600' }}>{qualites[q.key]} / 5</Text>
+                    <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: '#0f172a' }}>{q.label}</Text>
+                    <Text style={{ fontSize: 12, color: '#64748b', fontWeight: '600' }}>{qualites[q.key]} / 5</Text>
                   </View>
                   <View style={{ flexDirection: 'row', gap: 4 }}>
                     {[1, 2, 3, 4, 5].map(n => (
@@ -232,7 +242,7 @@ export default function ProfilJoueur() {
                         key={n}
                         style={{
                           flex: 1, height: 6, borderRadius: 3,
-                          backgroundColor: n <= qualites[q.key] ? '#1a1a2e' : '#E0DED6',
+                          backgroundColor: n <= qualites[q.key] ? '#2563eb' : '#e2e8f0',
                         }}
                       />
                     ))}
@@ -247,8 +257,8 @@ export default function ProfilJoueur() {
         <TouchableOpacity
           onPress={() => router.push(`/(tabs)/joueurs/avis?joueurId=${id}`)}
           style={{
-            backgroundColor: '#1a1a2e',
-            borderRadius: 12, padding: 14,
+            backgroundColor: '#2563eb',
+            borderRadius: 14, padding: 14,
             flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
             marginBottom: 20,
           }}
@@ -258,40 +268,48 @@ export default function ProfilJoueur() {
 
         {/* Liste des avis */}
         <Text style={{
-          fontSize: 11, fontWeight: '500', color: '#888',
-          textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10,
+          fontSize: 11, fontWeight: '700', color: '#94a3b8',
+          textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20,
         }}>
           {t('teammateReviews')} ({avis.length})
         </Text>
 
         {avis.length === 0 ? (
           <View style={{
-            backgroundColor: '#fff', borderRadius: 12, padding: 24, alignItems: 'center',
-            borderWidth: 0.5, borderColor: 'rgba(0,0,0,0.07)',
+            backgroundColor: '#ffffff', borderRadius: 14, padding: 24, alignItems: 'center',
+            shadowColor: '#0f172a',
+            shadowOpacity: 0.06,
+            shadowRadius: 8,
+            shadowOffset: { width: 0, height: 2 },
+            elevation: 2,
           }}>
             <Text style={{ fontSize: 24, marginBottom: 8 }}>💬</Text>
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#1a1a2e' }}>{t('noReviews')}</Text>
-            <Text style={{ fontSize: 12, color: '#999', marginTop: 4 }}>Sois le premier à noter ce joueur</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#0f172a' }}>{t('noReviews')}</Text>
+            <Text style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>Sois le premier à noter ce joueur</Text>
           </View>
         ) : (
           avis.map(a => (
             <View key={a.id} style={{
-              backgroundColor: '#fff', borderRadius: 12, padding: 12, marginBottom: 8,
-              borderWidth: 0.5, borderColor: 'rgba(0,0,0,0.07)',
+              backgroundColor: '#ffffff', borderRadius: 14, padding: 12, marginBottom: 8,
+              shadowColor: '#0f172a',
+              shadowOpacity: 0.06,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 2 },
+              elevation: 2,
             }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
                 <View style={{
                   width: 28, height: 28, borderRadius: 14,
-                  backgroundColor: '#F1EFE8', alignItems: 'center', justifyContent: 'center', marginRight: 8,
+                  backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center', marginRight: 8,
                 }}>
                   <Text style={{ fontSize: 12 }}>👤</Text>
                 </View>
-                <Text style={{ flex: 1, fontSize: 12, fontWeight: '500', color: '#1a1a2e' }}>
+                <Text style={{ flex: 1, fontSize: 12, fontWeight: '500', color: '#0f172a' }}>
                   {a.auteur_id ? t('teammate') : t('anonymous')}
                 </Text>
                 <Text style={{ fontSize: 13 }}>
-                  <Text style={{ color: '#c8a400' }}>{'★'.repeat(a.note)}</Text>
-                  <Text style={{ color: '#E0DED6' }}>{'★'.repeat(5 - a.note)}</Text>
+                  <Text style={{ color: '#f59e0b' }}>{'★'.repeat(a.note)}</Text>
+                  <Text style={{ color: '#e2e8f0' }}>{'★'.repeat(5 - a.note)}</Text>
                 </Text>
               </View>
 
@@ -300,9 +318,9 @@ export default function ProfilJoueur() {
                   {a.tags.map((tag, i) => {
                     const def = TAGS_DEF.find(t => t.key === tag)
                     return (
-                      <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#E6F1FB', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 }}>
+                      <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#eff6ff', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 }}>
                         {def && <Text style={{ fontSize: 12 }}>{def.emoji}</Text>}
-                        <Text style={{ fontSize: 11, color: '#185FA5', fontWeight: '500' }}>{tag}</Text>
+                        <Text style={{ fontSize: 11, color: '#2563eb', fontWeight: '500' }}>{tag}</Text>
                       </View>
                     )
                   })}
@@ -310,12 +328,12 @@ export default function ProfilJoueur() {
               )}
 
               {a.commentaire ? (
-                <Text style={{ fontSize: 12, color: '#666', fontStyle: 'italic', lineHeight: 18 }}>
+                <Text style={{ fontSize: 12, color: '#64748b', fontStyle: 'italic', lineHeight: 18 }}>
                   "{a.commentaire}"
                 </Text>
               ) : null}
 
-              <Text style={{ fontSize: 10, color: '#bbb', marginTop: 6 }}>
+              <Text style={{ fontSize: 10, color: '#94a3b8', marginTop: 6 }}>
                 {new Date(a.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
               </Text>
             </View>

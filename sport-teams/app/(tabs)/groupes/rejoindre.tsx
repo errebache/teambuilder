@@ -3,10 +3,11 @@ import { View, Text, TextInput, TouchableOpacity, Alert, Platform } from 'react-
 import { useRouter } from 'expo-router'
 import { supabase } from '../../../lib/supabase'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import { textAlign, arrow } from '../../../lib/rtl'
 
 export default function RejoindreGroupe() {
   const router = useRouter()
-  const { t } = useLanguage()
+  const { t, isRTL } = useLanguage()
   const [code, setCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -50,21 +51,19 @@ export default function RejoindreGroupe() {
     }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAF9' }}>
+    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{
-        backgroundColor: '#1a1a2e',
-        paddingTop: 44,
+        backgroundColor: '#1e3a5f',
+        paddingTop: 48,
         paddingHorizontal: 20,
         paddingBottom: 32,
-        borderBottomLeftRadius: 22,
-        borderBottomRightRadius: 22,
         alignItems: 'center',
       }}>
         <TouchableOpacity
           onPress={() => router.back()}
           style={{ alignSelf: 'flex-start', marginBottom: 20 }}
         >
-          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>←</Text>
+          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>{arrow(isRTL)}</Text>
         </TouchableOpacity>
 
         <Text style={{ fontSize: 40, marginBottom: 12 }}>🔑</Text>
@@ -84,27 +83,27 @@ export default function RejoindreGroupe() {
             setError('')
           }}
           placeholder="Ex: ABCD-EFGH"
-          placeholderTextColor="#ccc"
+          placeholderTextColor="#94a3b8"
           autoCapitalize="characters"
           autoCorrect={false}
           maxLength={9}
           style={{
-            backgroundColor: '#fff',
+            backgroundColor: '#ffffff',
             borderRadius: 14,
             padding: 16,
-            fontSize: 22,
+            fontSize: 24,
             fontWeight: '500',
-            color: '#1a1a2e',
-            borderWidth: 0.5,
-            borderColor: 'rgba(0,0,0,0.1)',
+            color: '#0f172a',
+            borderWidth: 1,
+            borderColor: '#e2e8f0',
             textAlign: 'center',
-            letterSpacing: 4,
+            letterSpacing: 6,
             marginBottom: 12,
           }}
         />
 
         {error ? (
-          <Text style={{ color: '#E24B4A', fontSize: 13, textAlign: 'center', marginBottom: 12 }}>
+          <Text style={{ color: '#ef4444', fontSize: 13, textAlign: 'center', marginBottom: 12 }}>
             {error}
           </Text>
         ) : null}
@@ -113,13 +112,13 @@ export default function RejoindreGroupe() {
           onPress={handleRejoindre}
           disabled={loading || code.length < 4}
           style={{
-            backgroundColor: code.length >= 4 ? '#1a1a2e' : '#ccc',
+            backgroundColor: code.length >= 4 ? '#2563eb' : '#e2e8f0',
             borderRadius: 14,
             padding: 16,
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: '#fff', fontSize: 15, fontWeight: '500' }}>
+          <Text style={{ color: code.length >= 4 ? '#fff' : '#94a3b8', fontSize: 15, fontWeight: '500' }}>
             {loading ? t('searching') : t('join')}
           </Text>
         </TouchableOpacity>

@@ -5,8 +5,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useRouter } from 'expo-router'
 import { signInAnonymously } from '../lib/supabase'
 import { demanderPermissions } from '../lib/notifications'
+import { LanguageProvider } from '../contexts/LanguageContext'
+import { ThemeProvider } from '../contexts/ThemeContext'
 
-export default function RootLayout() {
+function AppNavigator() {
   const router = useRouter()
 
   useEffect(() => {
@@ -35,15 +37,19 @@ export default function RootLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="onboarding" />
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen
-          name="tirage"
-          options={{ presentation: 'modal' }}
-        />
-        <Stack.Screen
-          name="settings"
-          options={{ presentation: 'modal' }}
-        />
+        <Stack.Screen name="tirage" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
       </Stack>
     </>
+  )
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider>
+      <LanguageProvider>
+        <AppNavigator />
+      </LanguageProvider>
+    </ThemeProvider>
   )
 }

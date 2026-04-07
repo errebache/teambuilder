@@ -3,7 +3,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router'
 import { genererEquipes } from '../../lib/algo-equilibrage'
 import { supabase } from '../../lib/supabase'
 import { planifierRappelMatch } from '../../lib/notifications'
-import { useEffect, useState } from 'react'
+import { cacheInvalidate } from '../../lib/cache'
+import { useEffect, useRef, useState } from 'react'
 import { Equipe, Joueur } from '../../types'
 
 const COULEURS_EQUIPES = ['#185FA5', '#0F6E56', '#854F0B', '#534AB7']
@@ -123,6 +124,7 @@ export default function Resultat() {
   })
   const [equilibre, setEquilibre] = useState(Number(equilibrePct))
   const [vue, setVue] = useState<'liste' | 'terrain'>('liste')
+  const savedRef = useRef(false)
 
   function handleRelancer() {
     const tousJoueurs = equipes.flatMap(e => e.joueurs)
@@ -136,7 +138,10 @@ export default function Resultat() {
   }
 
   useEffect(() => {
-    sauvegarderTirage()
+    if (!savedRef.current) {
+      savedRef.current = true
+      sauvegarderTirage()
+    }
   }, [])
 
   async function sauvegarderTirage() {
@@ -148,6 +153,7 @@ export default function Resultat() {
         equilibre_pct: equilibre,
         date_match: dateMatch.toISOString().split('T')[0],
       })
+      cacheInvalidate('tirages')
       await planifierRappelMatch(
         '',
         dateMatch,

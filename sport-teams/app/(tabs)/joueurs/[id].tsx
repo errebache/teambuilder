@@ -5,6 +5,7 @@ import { supabase } from '../../../lib/supabase'
 import { Joueur, Avis, Qualites } from '../../../types'
 import { Trash2, Pencil } from 'lucide-react-native'
 import { getPlayerInitials } from '../../../lib/supabase'
+import { cacheInvalidate } from '../../../lib/cache'
 
 const TAGS_DEF = [
   { key: 'Rapide',      emoji: '⚡' },
@@ -92,6 +93,7 @@ export default function ProfilJoueur() {
     confirmer(async () => {
       const { error } = await supabase.from('joueurs').delete().eq('id', id)
       if (!error) {
+        cacheInvalidate('joueurs:')
         if (from === 'groupe' && groupeId) {
           router.replace(`/(tabs)/groupes/${groupeId}`)
         } else {
@@ -101,11 +103,7 @@ export default function ProfilJoueur() {
     })
   }
 
-  if (!joueur) return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FAFAF9' }}>
-      <Text style={{ color: '#999' }}>Chargement...</Text>
-    </View>
-  )
+  if (!joueur) return <View style={{ flex: 1, backgroundColor: '#1a1a2e' }} />
 
   const moyenneAvis = avis.length > 0
     ? avis.reduce((sum, a) => sum + a.note, 0) / avis.length

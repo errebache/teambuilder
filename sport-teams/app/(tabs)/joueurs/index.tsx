@@ -93,21 +93,7 @@ export default function Joueurs() {
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
-        {loading ? (
-          <View style={{ alignItems: 'center', marginTop: 60 }}>
-            <Text style={{ color: '#999', fontSize: 13 }}>Chargement...</Text>
-          </View>
-        ) : joueurs.length === 0 ? (
-          <View style={{ alignItems: 'center', marginTop: 60 }}>
-            <Text style={{ fontSize: 40, marginBottom: 12 }}>👤</Text>
-            <Text style={{ fontSize: 16, fontWeight: '500', color: '#1a1a2e' }}>
-              Aucun joueur encore
-            </Text>
-            <Text style={{ fontSize: 13, color: '#999', marginTop: 4, textAlign: 'center' }}>
-              Ajoute des joueurs depuis un groupe
-            </Text>
-          </View>
-        ) : (
+        {joueurs.length > 0 ? (
           <>
             {/* TOP 3 podium */}
             {!recherche && top3.length >= 2 && (
@@ -200,7 +186,17 @@ export default function Joueurs() {
               </TouchableOpacity>
             ))}
           </>
-        )}
+        ) : !loading ? (
+          <View style={{ alignItems: 'center', marginTop: 60 }}>
+            <Text style={{ fontSize: 40, marginBottom: 12 }}>👤</Text>
+            <Text style={{ fontSize: 16, fontWeight: '500', color: '#1a1a2e' }}>
+              Aucun joueur encore
+            </Text>
+            <Text style={{ fontSize: 13, color: '#999', marginTop: 4, textAlign: 'center' }}>
+              Ajoute des joueurs depuis un groupe
+            </Text>
+          </View>
+        ) : null}
       </ScrollView>
     </View>
   )

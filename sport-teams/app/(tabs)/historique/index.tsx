@@ -71,17 +71,7 @@ export default function Historique() {
             <Text style={{ fontSize: 32, marginBottom: 12 }}>⚠️</Text>
             <Text style={{ fontSize: 14, color: '#E24B4A', textAlign: 'center' }}>{fetchError}</Text>
           </View>
-        ) : tirages.length === 0 && !loading ? (
-          <View style={{ alignItems: 'center', marginTop: 60 }}>
-            <Text style={{ fontSize: 32, marginBottom: 12 }}>🏆</Text>
-            <Text style={{ fontSize: 16, fontWeight: '500', color: '#1a1a2e' }}>
-              Aucun match encore
-            </Text>
-            <Text style={{ fontSize: 13, color: '#999', marginTop: 4 }}>
-              Lance ton premier tirage !
-            </Text>
-          </View>
-        ) : (
+        ) : tirages.length > 0 ? (
           tirages.map((tirage) => (
             <View
               key={tirage.id}
@@ -146,7 +136,17 @@ export default function Historique() {
               </View>
             </View>
           ))
-        )}
+        ) : !loading ? (
+          <View style={{ alignItems: 'center', marginTop: 60 }}>
+            <Text style={{ fontSize: 32, marginBottom: 12 }}>🏆</Text>
+            <Text style={{ fontSize: 16, fontWeight: '500', color: '#1a1a2e' }}>
+              Aucun match encore
+            </Text>
+            <Text style={{ fontSize: 13, color: '#999', marginTop: 4 }}>
+              Lance ton premier tirage !
+            </Text>
+          </View>
+        ) : null}
       </ScrollView>
     </View>
   )

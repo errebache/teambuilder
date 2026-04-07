@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native'
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router'
 import { supabase } from '../../../lib/supabase'
+import { cacheInvalidate } from '../../../lib/cache'
 import { Qualites } from '../../../types'
 
 const POSTES: Record<string, string[]> = {
@@ -87,6 +88,7 @@ export default function EditJoueur() {
         })
         .eq('id', id)
       if (error) throw error
+      cacheInvalidate('joueurs:')
       router.replace(`/(tabs)/joueurs/${id}${from === 'groupe' && groupeId ? `?from=groupe&groupeId=${groupeId}` : ''}`)
     } catch (e: any) {
       setError(e.message)

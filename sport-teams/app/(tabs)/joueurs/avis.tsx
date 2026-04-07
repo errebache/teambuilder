@@ -120,11 +120,7 @@ export default function LaisserAvis() {
     }
   }
 
-  if (!joueur) return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
-      <Text style={{ color: colors.textMuted }}>{t('loading')}</Text>
-    </View>
-  )
+  if (!joueur) return <View style={{ flex: 1, backgroundColor: '#1a1a2e' }} />
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>

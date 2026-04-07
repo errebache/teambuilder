@@ -1,15 +1,31 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { Joueur } from '../types'
+import { cacheGet, cacheSet, cacheInvalidate } from '../lib/cache'
 
 export function useJoueurs(groupeId: string) {
-  const [joueurs, setJoueurs] = useState<Joueur[]>([])
-  const [loading, setLoading] = useState(false)
-  const [hasFetched, setHasFetched] = useState(false)
+  const cacheKey = `joueurs:${groupeId}`
+  const [joueurs, setJoueurs] = useState<Joueur[]>(() => cacheGet<Joueur[]>(cacheKey) ?? [])
+  const [loading, setLoading] = useState(() => !cacheGet(cacheKey))
+  const [hasFetched, setHasFetched] = useState(() => !!cacheGet(cacheKey))
 
-  async function fetchJoueurs() {
+  async function fetchJoueurs({ force = false } = {}) {
     if (!groupeId) return
-    setLoading(true)
+    if (!force) {
+      const hit = cacheGet<Joueur[]>(cacheKey)
+      if (hit) {
+        setJoueurs(hit)
+        setLoading(false)
+        setHasFetched(true)
+        _fetch(false) // rafraîchissement silencieux
+        return
+      }
+    }
+    await _fetch(true)
+  }
+
+  async function _fetch(showLoading: boolean) {
+    if (showLoading) setLoading(true)
     try {
       const { data, error } = await supabase
         .from('joueurs')
@@ -17,12 +33,18 @@ export function useJoueurs(groupeId: string) {
         .eq('groupe_id', groupeId)
         .order('note_moyenne', { ascending: false })
       if (error) throw error
-      setJoueurs(data || [])
+      const result = data || []
+      cacheSet(cacheKey, result)
+      setJoueurs(result)
     } finally {
-      setLoading(false)
+      if (showLoading) setLoading(false)
       setHasFetched(true)
     }
   }
 
-  return { joueurs, loading, hasFetched, fetchJoueurs }
+  function invalidate() {
+    cacheInvalidate(cacheKey)
+  }
+
+  return { joueurs, loading, hasFetched, fetchJoueurs, invalidate }
 }

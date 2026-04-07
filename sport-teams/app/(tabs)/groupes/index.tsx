@@ -3,7 +3,6 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { useRouter, useFocusEffect } from 'expo-router'
 import { Settings, Plus } from 'lucide-react-native'
 import { useGroupes } from '../../../hooks/useGroupes'
-
 export default function Groupes() {
   const router = useRouter()
   const { groupes, loading, fetchGroupes } = useGroupes()
@@ -72,25 +71,7 @@ export default function Groupes() {
           Mes groupes
         </Text>
 
-        {loading ? (
-          <View style={{ alignItems: 'center', marginTop: 40 }}>
-            <Text style={{ color: '#999', fontSize: 13 }}>Chargement...</Text>
-          </View>
-        ) : groupes.length === 0 ? (
-          <View style={{
-            backgroundColor: '#fff', borderRadius: 16, padding: 40,
-            alignItems: 'center', marginTop: 8,
-            borderWidth: 0.5, borderColor: 'rgba(0,0,0,0.07)',
-          }}>
-            <Text style={{ fontSize: 48, marginBottom: 12 }}>⚽</Text>
-            <Text style={{ fontSize: 16, fontWeight: '500', color: '#1a1a2e' }}>
-              Aucun groupe pour l'instant
-            </Text>
-            <Text style={{ fontSize: 13, color: '#999', marginTop: 4 }}>
-              Crée ton premier groupe !
-            </Text>
-          </View>
-        ) : (
+        {groupes.length > 0 ? (
           groupes.map(groupe => (
             <TouchableOpacity
               key={groupe.id}
@@ -135,7 +116,21 @@ export default function Groupes() {
               </View>
             </TouchableOpacity>
           ))
-        )}
+        ) : !loading ? (
+          <View style={{
+            backgroundColor: '#fff', borderRadius: 16, padding: 40,
+            alignItems: 'center', marginTop: 8,
+            borderWidth: 0.5, borderColor: 'rgba(0,0,0,0.07)',
+          }}>
+            <Text style={{ fontSize: 48, marginBottom: 12 }}>⚽</Text>
+            <Text style={{ fontSize: 16, fontWeight: '500', color: '#1a1a2e' }}>
+              Aucun groupe pour l'instant
+            </Text>
+            <Text style={{ fontSize: 13, color: '#999', marginTop: 4 }}>
+              Crée ton premier groupe !
+            </Text>
+          </View>
+        ) : null}
 
       </ScrollView>
     </View>

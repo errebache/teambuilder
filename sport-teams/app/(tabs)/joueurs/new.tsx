@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-nativ
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router'
 import { getRandomAvatarColor } from '../../../lib/supabase'
 import { supabase } from '../../../lib/supabase'
+import { cacheInvalidate } from '../../../lib/cache'
 import { Qualites } from '../../../types'
 
 const POSTES: Record<string, string[]> = {
@@ -71,6 +72,7 @@ export default function NewJoueur() {
         qualites,
       })
       if (error) throw error
+      cacheInvalidate(`joueurs:${groupeId}`)
       router.replace(`/(tabs)/groupes/${groupeId}`)
     } catch (e: any) {
       setError(e.message)

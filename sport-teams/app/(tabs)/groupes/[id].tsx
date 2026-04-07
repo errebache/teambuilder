@@ -147,13 +147,7 @@ export default function DetailGroupe() {
           Joueurs
         </Text>
 
-        {joueurs.length === 0 ? (
-          <View style={{ alignItems: 'center', marginTop: 40, marginBottom: 20 }}>
-            <Text style={{ fontSize: 13, color: '#999' }}>
-              Aucun joueur — ajoute le premier !
-            </Text>
-          </View>
-        ) : (
+        {joueurs.length > 0 ? (
           joueurs.map(joueur => (
             <TouchableOpacity
               key={joueur.id}
@@ -194,7 +188,13 @@ export default function DetailGroupe() {
               </Text>
             </TouchableOpacity>
           ))
-        )}
+        ) : hasFetched ? (
+          <View style={{ alignItems: 'center', marginTop: 40, marginBottom: 20 }}>
+            <Text style={{ fontSize: 13, color: '#999' }}>
+              Aucun joueur — ajoute le premier !
+            </Text>
+          </View>
+        ) : null}
 
       </ScrollView>
 

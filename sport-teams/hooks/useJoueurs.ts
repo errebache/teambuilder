@@ -11,21 +11,16 @@ export function useJoueurs(groupeId: string) {
 
   async function fetchJoueurs({ force = false } = {}) {
     if (!groupeId) return
-    if (!force) {
-      const hit = cacheGet<Joueur[]>(cacheKey)
-      if (hit) {
-        setJoueurs(hit)
-        setLoading(false)
-        setHasFetched(true)
-        _fetch(false) // rafraîchissement silencieux
-        return
-      }
-    }
-    await _fetch(true)
-  }
 
-  async function _fetch(showLoading: boolean) {
-    if (showLoading) setLoading(true)
+    // Cache frais → rien à faire, les données sont déjà dans le state
+    if (!force && cacheGet(cacheKey)) {
+      setLoading(false)
+      setHasFetched(true)
+      return
+    }
+
+    // Cache expiré ou force → fetch complet
+    setLoading(true)
     try {
       const { data, error } = await supabase
         .from('joueurs')
@@ -37,7 +32,7 @@ export function useJoueurs(groupeId: string) {
       cacheSet(cacheKey, result)
       setJoueurs(result)
     } finally {
-      if (showLoading) setLoading(false)
+      setLoading(false)
       setHasFetched(true)
     }
   }

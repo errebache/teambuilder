@@ -4,13 +4,18 @@ import { Plus, Play, Trash2, Copy } from 'lucide-react-native'
 import { useCallback, useState, useEffect } from 'react'
 import { useJoueurs } from '../../../hooks/useJoueurs'
 import { supabase } from '../../../lib/supabase'
+import { cacheGet } from '../../../lib/cache'
 import { Groupe } from '../../../types'
 
 export default function DetailGroupe() {
   const router = useRouter()
   const { id, nouveauMembre } = useLocalSearchParams()
   const { joueurs, hasFetched, fetchJoueurs } = useJoueurs(id as string)
-  const [groupe, setGroupe] = useState<Groupe | null>(null)
+  const [groupe, setGroupe] = useState<Groupe | null>(() => {
+    // Récupère instantanément depuis le cache de la liste des groupes
+    const list = cacheGet<Groupe[]>('groupes')
+    return list?.find(g => g.id === id) ?? null
+  })
 
   useFocusEffect(
     useCallback(() => {
@@ -45,6 +50,8 @@ export default function DetailGroupe() {
   }, [nouveauMembre, hasFetched])
 
   async function fetchGroupe() {
+    // Déjà chargé depuis le cache — pas de fetch réseau
+    if (groupe) return
     const { data } = await supabase
       .from('groupes')
       .select('*')

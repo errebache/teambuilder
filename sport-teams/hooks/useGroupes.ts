@@ -9,20 +9,14 @@ export function useGroupes() {
   const [error, setError] = useState<string | null>(null)
 
   async function fetchGroupes({ force = false } = {}) {
-    if (!force) {
-      const hit = cacheGet<Groupe[]>('groupes')
-      if (hit) {
-        setGroupes(hit)
-        setLoading(false)
-        _fetch(false) // rafraîchissement silencieux en arrière-plan
-        return
-      }
+    // Cache frais → rien à faire, les données sont déjà dans le state
+    if (!force && cacheGet('groupes')) {
+      setLoading(false)
+      return
     }
-    await _fetch(true)
-  }
 
-  async function _fetch(showLoading: boolean) {
-    if (showLoading) setLoading(true)
+    // Cache expiré ou force → fetch complet
+    setLoading(true)
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
@@ -48,7 +42,7 @@ export function useGroupes() {
     } catch (e: any) {
       setError(e.message)
     } finally {
-      if (showLoading) setLoading(false)
+      setLoading(false)
     }
   }
 

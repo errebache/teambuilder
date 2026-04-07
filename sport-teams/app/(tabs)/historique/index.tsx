@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { useFocusEffect } from 'expo-router'
 import { supabase } from '../../../lib/supabase'
 import { cacheGet, cacheSet } from '../../../lib/cache'
+import { useLanguage } from '../../../contexts/LanguageContext'
 
 const COULEURS = ['#185FA5', '#0F6E56', '#854F0B', '#534AB7']
 
@@ -23,6 +24,7 @@ function getEquilibreColor(pct: number): string {
 }
 
 export default function Historique() {
+  const { t } = useLanguage()
   const [tirages, setTirages] = useState<any[]>(() => cacheGet<any[]>('tirages') ?? [])
   const [loading, setLoading] = useState(!cacheGet('tirages'))
   const [fetchError, setFetchError] = useState<string | null>(null)
@@ -89,7 +91,7 @@ export default function Historique() {
         borderBottomRightRadius: 24,
       }}>
         <Text style={{ color: '#fff', fontSize: 24, fontWeight: '600', letterSpacing: -0.3 }}>
-          Historique
+          {t('history')}
         </Text>
         <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, marginTop: 4 }}>
           {tirages.length} match{tirages.length !== 1 ? 's' : ''} joué{tirages.length !== 1 ? 's' : ''}
@@ -245,10 +247,10 @@ export default function Historique() {
               <Text style={{ fontSize: 36 }}>🏆</Text>
             </View>
             <Text style={{ fontSize: 17, fontWeight: '600', color: '#1a1a2e' }}>
-              Aucun match encore
+              {t('noMatchYet')}
             </Text>
             <Text style={{ fontSize: 13, color: '#999', marginTop: 6, textAlign: 'center', lineHeight: 20 }}>
-              Lance ton premier tirage depuis{'\n'}un groupe
+              {t('startFirst')}
             </Text>
           </View>
         ) : null}

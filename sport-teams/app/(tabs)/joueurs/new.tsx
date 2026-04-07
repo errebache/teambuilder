@@ -5,6 +5,7 @@ import { getRandomAvatarColor } from '../../../lib/supabase'
 import { supabase } from '../../../lib/supabase'
 import { cacheInvalidate } from '../../../lib/cache'
 import { Qualites } from '../../../types'
+import { useLanguage } from '../../../contexts/LanguageContext'
 
 const POSTES: Record<string, string[]> = {
   Football: ['Gardien', 'Défenseur', 'Milieu', 'Attaquant'],
@@ -35,6 +36,7 @@ function moyenne(q: Qualites): number {
 
 export default function NewJoueur() {
   const router = useRouter()
+  const { t } = useLanguage()
   const { groupeId } = useLocalSearchParams()
   const [username, setUsername] = useState('')
   const [sport, setSport] = useState('Football')
@@ -93,7 +95,7 @@ export default function NewJoueur() {
         <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 8 }}>
           <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>←</Text>
         </TouchableOpacity>
-        <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500' }}>Ajouter un joueur</Text>
+        <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500' }}>{t('addPlayer')}</Text>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
@@ -163,7 +165,7 @@ export default function NewJoueur() {
 
         {/* Sport */}
         <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>
-          Sport
+          {t('sport')}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
           {SPORTS.map(s => (
@@ -183,7 +185,7 @@ export default function NewJoueur() {
 
         {/* Poste */}
         <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>
-          Poste
+          {t('position')}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
           {(POSTES[sport] || POSTES.Autre).map(p => (
@@ -209,7 +211,7 @@ export default function NewJoueur() {
           style={{ backgroundColor: '#1a1a2e', borderRadius: 14, padding: 14, alignItems: 'center', opacity: loading ? 0.6 : 1 }}
         >
           <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
-            {loading ? 'Ajout en cours...' : 'Ajouter le joueur'}
+            {loading ? t('addPlayerLoading') : t('addPlayer')}
           </Text>
         </TouchableOpacity>
       </ScrollView>

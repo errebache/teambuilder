@@ -1,11 +1,13 @@
 import { useCallback } from 'react'
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { useRouter, useFocusEffect } from 'expo-router'
-import { Settings, Plus } from 'lucide-react-native'
+import { Plus } from 'lucide-react-native'
 import { useGroupes } from '../../../hooks/useGroupes'
+import { useLanguage } from '../../../contexts/LanguageContext'
 export default function Groupes() {
   const router = useRouter()
   const { groupes, loading, fetchGroupes } = useGroupes()
+  const { t } = useLanguage()
 
   useFocusEffect(
     useCallback(() => {
@@ -23,18 +25,13 @@ export default function Groupes() {
         borderBottomLeftRadius: 22,
         borderBottomRightRadius: 22,
       }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <View>
-            <Text style={{ color: '#fff', fontSize: 22, fontWeight: '500' }}>
-              Bonjour 👋
-            </Text>
-            <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, marginTop: 4 }}>
-              {groupes.length} groupes actifs
-            </Text>
-          </View>
-          <TouchableOpacity onPress={() => router.push('/settings')}>
-            <Settings size={22} color="rgba(255,255,255,0.6)" />
-          </TouchableOpacity>
+        <View>
+          <Text style={{ color: '#fff', fontSize: 22, fontWeight: '500' }}>
+            {t('hello')}
+          </Text>
+          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, marginTop: 4 }}>
+            {groupes.length} {t('activeGroups')}
+          </Text>
         </View>
 
         <View style={{ flexDirection: 'row', gap: 10, marginTop: 16 }}>
@@ -47,7 +44,7 @@ export default function Groupes() {
             }}
           >
             <Plus size={15} color="#fff" />
-            <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>Nouveau groupe</Text>
+            <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>{t('newGroup')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => router.push('/(tabs)/groupes/rejoindre')}
@@ -57,7 +54,7 @@ export default function Groupes() {
               alignItems: 'center', justifyContent: 'center',
             }}
           >
-            <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>Rejoindre avec un code</Text>
+            <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>{t('joinWithCode')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -68,7 +65,7 @@ export default function Groupes() {
           fontSize: 11, fontWeight: '500', color: '#888',
           textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10,
         }}>
-          Mes groupes
+          {t('myGroups')}
         </Text>
 
         {groupes.length > 0 ? (
@@ -111,7 +108,7 @@ export default function Groupes() {
                 borderRadius: 20,
               }}>
                 <Text style={{ fontSize: 10, fontWeight: '500', color: '#185FA5' }}>
-                  Actif
+                  {t('active')}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -124,10 +121,10 @@ export default function Groupes() {
           }}>
             <Text style={{ fontSize: 48, marginBottom: 12 }}>⚽</Text>
             <Text style={{ fontSize: 16, fontWeight: '500', color: '#1a1a2e' }}>
-              Aucun groupe pour l'instant
+              {t('noGroups')}
             </Text>
             <Text style={{ fontSize: 13, color: '#999', marginTop: 4 }}>
-              Crée ton premier groupe !
+              {t('createFirst')}
             </Text>
           </View>
         ) : null}

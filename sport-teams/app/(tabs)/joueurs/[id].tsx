@@ -6,6 +6,7 @@ import { Joueur, Avis, Qualites } from '../../../types'
 import { Trash2, Pencil } from 'lucide-react-native'
 import { getPlayerInitials } from '../../../lib/supabase'
 import { cacheInvalidate } from '../../../lib/cache'
+import { useLanguage } from '../../../contexts/LanguageContext'
 
 const TAGS_DEF = [
   { key: 'Rapide',      emoji: '⚡' },
@@ -31,6 +32,7 @@ const QUALITES_DEF: { key: keyof Qualites; label: string; emoji: string }[] = [
 
 export default function ProfilJoueur() {
   const router = useRouter()
+  const { t } = useLanguage()
   const { id, from, groupeId } = useLocalSearchParams()
   const [joueur, setJoueur] = useState<Joueur | null>(null)
   const [avis, setAvis] = useState<Avis[]>([])
@@ -83,8 +85,8 @@ export default function ProfilJoueur() {
           'Supprimer le joueur',
           'Cette action est irréversible.',
           [
-            { text: 'Annuler', style: 'cancel' },
-            { text: 'Supprimer', style: 'destructive', onPress: callback },
+            { text: t('cancel'), style: 'cancel' },
+            { text: t('delete'), style: 'destructive', onPress: callback },
           ]
         )
       }
@@ -168,7 +170,7 @@ export default function ProfilJoueur() {
 
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
           <View style={{ backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20 }}>
-            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '500' }}>{nbMatchs} matchs</Text>
+            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '500' }}>{nbMatchs} {t('matchesPlayed')}</Text>
           </View>
           <View style={{ backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20 }}>
             <Text style={{ color: '#fff', fontSize: 12, fontWeight: '500' }}>
@@ -186,9 +188,9 @@ export default function ProfilJoueur() {
         {/* Stats */}
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 20 }}>
           {[
-            { label: 'Matchs joués', value: nbMatchs },
-            { label: 'Note moyenne', value: `${'★'.repeat(Math.round(moyenneArrondie))} ${moyenneArrondie.toFixed(1)}` },
-            { label: 'Avis reçus', value: avis.length },
+            { label: t('matchesPlayed'), value: nbMatchs },
+            { label: t('avgRating'), value: `${'★'.repeat(Math.round(moyenneArrondie))} ${moyenneArrondie.toFixed(1)}` },
+            { label: t('reviewsReceived'), value: avis.length },
           ].map((stat, i) => (
             <View key={i} style={{
               flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 12,
@@ -251,7 +253,7 @@ export default function ProfilJoueur() {
             marginBottom: 20,
           }}
         >
-          <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>⭐ Laisser un avis</Text>
+          <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>⭐ {t('leaveReview')}</Text>
         </TouchableOpacity>
 
         {/* Liste des avis */}
@@ -259,7 +261,7 @@ export default function ProfilJoueur() {
           fontSize: 11, fontWeight: '500', color: '#888',
           textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10,
         }}>
-          Avis des coéquipiers ({avis.length})
+          {t('teammateReviews')} ({avis.length})
         </Text>
 
         {avis.length === 0 ? (
@@ -268,7 +270,7 @@ export default function ProfilJoueur() {
             borderWidth: 0.5, borderColor: 'rgba(0,0,0,0.07)',
           }}>
             <Text style={{ fontSize: 24, marginBottom: 8 }}>💬</Text>
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#1a1a2e' }}>Aucun avis pour l'instant</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#1a1a2e' }}>{t('noReviews')}</Text>
             <Text style={{ fontSize: 12, color: '#999', marginTop: 4 }}>Sois le premier à noter ce joueur</Text>
           </View>
         ) : (
@@ -285,7 +287,7 @@ export default function ProfilJoueur() {
                   <Text style={{ fontSize: 12 }}>👤</Text>
                 </View>
                 <Text style={{ flex: 1, fontSize: 12, fontWeight: '500', color: '#1a1a2e' }}>
-                  {a.auteur_id ? 'Coéquipier' : 'Anonyme'}
+                  {a.auteur_id ? t('teammate') : t('anonymous')}
                 </Text>
                 <Text style={{ fontSize: 13 }}>
                   <Text style={{ color: '#c8a400' }}>{'★'.repeat(a.note)}</Text>

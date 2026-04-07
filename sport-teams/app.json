@@ -37,10 +37,7 @@
       "expo-secure-store"
     ],
     "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "57c63a0f-6dae-41ac-a3f7-b4530b49f511"
-      }
+      "router": {}
     },
     "owner": "errebache"
   }

@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-nativ
 import { useRouter, useFocusEffect } from 'expo-router'
 import { supabase } from '../../../lib/supabase'
 import { Joueur } from '../../../types'
+import { useLanguage } from '../../../contexts/LanguageContext'
 
 type JoueurAvecGroupe = Joueur & {
   groupes: { nom: string; emoji: string } | null
@@ -10,6 +11,7 @@ type JoueurAvecGroupe = Joueur & {
 
 export default function Joueurs() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [joueurs, setJoueurs] = useState<JoueurAvecGroupe[]>([])
   const [loading, setLoading] = useState(false)
   const [recherche, setRecherche] = useState('')
@@ -71,10 +73,10 @@ export default function Joueurs() {
         borderBottomRightRadius: 22,
       }}>
         <Text style={{ color: '#fff', fontSize: 22, fontWeight: '500' }}>
-          Joueurs
+          {t('players')}
         </Text>
         <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, marginTop: 2 }}>
-          {joueurs.length} joueurs au total
+          {joueurs.length} {t('playersTotal')}
         </Text>
         <View style={{
           flexDirection: 'row', alignItems: 'center',
@@ -85,7 +87,7 @@ export default function Joueurs() {
           <TextInput
             value={recherche}
             onChangeText={setRecherche}
-            placeholder="Rechercher un joueur..."
+            placeholder={t('searchPlayer')}
             placeholderTextColor="rgba(255,255,255,0.4)"
             style={{ flex: 1, color: '#fff', fontSize: 14, paddingVertical: 10 }}
           />
@@ -190,10 +192,10 @@ export default function Joueurs() {
           <View style={{ alignItems: 'center', marginTop: 60 }}>
             <Text style={{ fontSize: 40, marginBottom: 12 }}>👤</Text>
             <Text style={{ fontSize: 16, fontWeight: '500', color: '#1a1a2e' }}>
-              Aucun joueur encore
+              {t('noPlayers')}
             </Text>
             <Text style={{ fontSize: 13, color: '#999', marginTop: 4, textAlign: 'center' }}>
-              Ajoute des joueurs depuis un groupe
+              {t('addPlayersFromGroup')}
             </Text>
           </View>
         ) : null}

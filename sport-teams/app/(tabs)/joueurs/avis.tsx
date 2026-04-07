@@ -7,23 +7,23 @@ import { useTheme } from '../../../contexts/ThemeContext'
 import { Joueur } from '../../../types'
 import { row, textAlign, alignSelf, arrow } from '../../../lib/rtl'
 
-const TAGS_DISPONIBLES = [
-  { key: 'Rapide',      emoji: '⚡' },
-  { key: 'Technique',   emoji: '🎯' },
-  { key: 'Défenseur',   emoji: '🛡️' },
-  { key: 'Attaquant',   emoji: '🔥' },
-  { key: 'Passeur',     emoji: '🤝' },
-  { key: 'Buteur',      emoji: '⚽' },
-  { key: 'Leader',      emoji: '👑' },
-  { key: 'Régulier',    emoji: '📈' },
-  { key: 'Combatif',    emoji: '💪' },
-  { key: 'Fair-play',   emoji: '🤲' },
-]
-
 export default function LaisserAvis() {
   const router = useRouter()
   const { joueurId } = useLocalSearchParams()
   const { t, isRTL } = useLanguage()
+
+  const TAGS_DISPONIBLES = [
+    { key: 'Rapide',      emoji: '⚡', label: t('tagRapide') },
+    { key: 'Technique',   emoji: '🎯', label: t('tagTechnique') },
+    { key: 'Défenseur',   emoji: '🛡️', label: t('tagDefenseur') },
+    { key: 'Attaquant',   emoji: '🔥', label: t('tagAttaquant') },
+    { key: 'Passeur',     emoji: '🤝', label: t('tagPasseur') },
+    { key: 'Buteur',      emoji: '⚽', label: t('tagButeur') },
+    { key: 'Leader',      emoji: '👑', label: t('tagLeader') },
+    { key: 'Régulier',    emoji: '📈', label: t('tagRegulier') },
+    { key: 'Combatif',    emoji: '💪', label: t('tagAgressif') },
+    { key: 'Fair-play',   emoji: '🤲', label: t('tagFairPlay') },
+  ]
   const { colors } = useTheme()
 
   const [joueur, setJoueur] = useState<Joueur | null>(null)
@@ -230,7 +230,7 @@ export default function LaisserAvis() {
                     fontSize: 13, fontWeight: '500',
                     color: selectionne ? '#fff' : colors.textSecondary,
                   }}>
-                    {tag.key}
+                    {tag.label}
                   </Text>
                 </TouchableOpacity>
               )

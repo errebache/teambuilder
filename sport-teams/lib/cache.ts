@@ -17,3 +17,7 @@ export function cacheInvalidate(prefix: string) {
     if (key.startsWith(prefix)) store.delete(key)
   }
 }
+
+export function cacheClear() {
+  store.clear()
+}

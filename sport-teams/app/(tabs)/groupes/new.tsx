@@ -4,12 +4,14 @@ import { useCallback } from 'react'
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useGroupes } from '../../../hooks/useGroupes'
+import { useLanguage } from '../../../contexts/LanguageContext'
 
 const SPORTS = ['Football', 'Basketball', 'Volleyball', 'Tennis', 'Rugby', 'Autre']
 const EMOJIS = ['⚽', '🏀', '🏐', '🎾', '🏈', '🥊', '🏊', '🎯', '🏋️', '⛷️', '🤸', '🏄']
 
 export default function NewGroupe() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [nom, setNom] = useState('')
   const [sport, setSport] = useState('')
   const [emoji, setEmoji] = useState('⚽')
@@ -57,14 +59,14 @@ export default function NewGroupe() {
           <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>←</Text>
         </TouchableOpacity>
         <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500' }}>
-          Nouveau groupe
+          {t('newGroupTitle')}
         </Text>
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
 
         <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>
-          Emoji
+          {t('emoji')}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
           {EMOJIS.map(e => (
@@ -87,7 +89,7 @@ export default function NewGroupe() {
         </View>
 
         <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>
-          Nom du groupe
+          {t('groupName')}
         </Text>
         <TextInput
           value={nom}
@@ -107,7 +109,7 @@ export default function NewGroupe() {
         />
 
         <Text style={{ fontSize: 11, fontWeight: '500', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>
-          Sport
+          {t('sport')}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
           {SPORTS.map(s => (
@@ -150,7 +152,7 @@ export default function NewGroupe() {
           }}
         >
           <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
-            Créer le groupe
+            {t('createGroupBtn')}
           </Text>
         </TouchableOpacity>
 

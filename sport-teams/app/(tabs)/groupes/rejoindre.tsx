@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, Alert, Platform } from 'react-native'
 import { useRouter } from 'expo-router'
 import { supabase } from '../../../lib/supabase'
+import { useLanguage } from '../../../contexts/LanguageContext'
 
 export default function RejoindreGroupe() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [code, setCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -26,7 +28,7 @@ export default function RejoindreGroupe() {
         .single()
 
         if (error || !data) {
-        setError('Code invalide — vérifie et réessaie')
+        setError(t('invalidCode'))
         return
         }
 
@@ -67,10 +69,10 @@ export default function RejoindreGroupe() {
 
         <Text style={{ fontSize: 40, marginBottom: 12 }}>🔑</Text>
         <Text style={{ color: '#fff', fontSize: 22, fontWeight: '500' }}>
-          Rejoindre un groupe
+          {t('joinGroup')}
         </Text>
         <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, marginTop: 6, textAlign: 'center' }}>
-          Entre le code partagé par l'admin du groupe
+          {t('enterCode')}
         </Text>
       </View>
 
@@ -118,7 +120,7 @@ export default function RejoindreGroupe() {
           }}
         >
           <Text style={{ color: '#fff', fontSize: 15, fontWeight: '500' }}>
-            {loading ? 'Recherche...' : 'Rejoindre'}
+            {loading ? t('searching') : t('join')}
           </Text>
         </TouchableOpacity>
       </View>

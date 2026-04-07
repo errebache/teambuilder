@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router'
 import { View } from 'react-native'
-import { LayoutGrid, Users, Clock } from 'lucide-react-native'
+import { LayoutGrid, Users, Clock, Settings } from 'lucide-react-native'
 
 export default function TabsLayout() {
   return (
@@ -75,6 +75,19 @@ export default function TabsLayout() {
             navigation.navigate('historique', { screen: 'index' })
           },
         })}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <View style={{ alignItems: 'center', gap: 3 }}>
+              <Settings size={20} color={color} />
+              {focused && (
+                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#1a1a2e' }} />
+              )}
+            </View>
+          ),
+        }}
       />
     </Tabs>
   )

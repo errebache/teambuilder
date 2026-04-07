@@ -4,12 +4,15 @@ import { Plus, Play, Trash2, Copy } from 'lucide-react-native'
 import { useCallback, useState, useEffect } from 'react'
 import { useJoueurs } from '../../../hooks/useJoueurs'
 import { supabase } from '../../../lib/supabase'
-import { cacheGet } from '../../../lib/cache'
+import { cacheGet, cacheInvalidate } from '../../../lib/cache'
 import { Groupe } from '../../../types'
+import { useLanguage } from '../../../contexts/LanguageContext'
 
 export default function DetailGroupe() {
+  const { t } = useLanguage()
   const router = useRouter()
   const { id, nouveauMembre } = useLocalSearchParams()
+
   const { joueurs, hasFetched, fetchJoueurs } = useJoueurs(id as string)
   const [groupe, setGroupe] = useState<Groupe | null>(() => {
     // Récupère instantanément depuis le cache de la liste des groupes
@@ -70,8 +73,8 @@ export default function DetailGroupe() {
           'Supprimer le groupe',
           'Tu vas supprimer ce groupe et tous ses joueurs. Cette action est irréversible.',
           [
-            { text: 'Annuler', style: 'cancel' },
-            { text: 'Supprimer', style: 'destructive', onPress: callback },
+            { text: t('cancel'), style: 'cancel' },
+            { text: t('delete'), style: 'destructive', onPress: callback },
           ]
         )
       }
@@ -80,7 +83,12 @@ export default function DetailGroupe() {
     confirmer(async () => {
       await supabase.from('joueurs').delete().eq('groupe_id', id)
       const { error } = await supabase.from('groupes').delete().eq('id', id)
-      if (!error) router.replace('/(tabs)/groupes')
+      if (!error) {
+        cacheInvalidate('groupes')
+        cacheInvalidate('joueurs:')
+        cacheInvalidate('tirages')
+        router.replace('/(tabs)/groupes')
+      }
     })
   }
 
@@ -151,7 +159,7 @@ export default function DetailGroupe() {
           fontSize: 11, fontWeight: '500', color: '#888',
           textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10,
         }}>
-          Joueurs
+          {t('players')}
         </Text>
 
         {joueurs.length > 0 ? (
@@ -198,7 +206,7 @@ export default function DetailGroupe() {
         ) : hasFetched ? (
           <View style={{ alignItems: 'center', marginTop: 40, marginBottom: 20 }}>
             <Text style={{ fontSize: 13, color: '#999' }}>
-              Aucun joueur — ajoute le premier !
+              {t('noPlayersYet')}
             </Text>
           </View>
         ) : null}
@@ -221,7 +229,7 @@ export default function DetailGroupe() {
           }}
         >
           <Plus size={15} color="#fff" />
-          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>Ajouter un joueur</Text>
+          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>{t('addPlayer')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -235,7 +243,7 @@ export default function DetailGroupe() {
         >
           <Play size={15} color="#fff" />
           <Text style={{ color: '#fff', fontSize: 13, fontWeight: '500' }}>
-            {joueurs.length < 4 ? `Encore ${4 - joueurs.length}` : 'Générer les équipes'}
+            {joueurs.length < 4 ? `Encore ${4 - joueurs.length}` : t('generateTeams')}
           </Text>
         </TouchableOpacity>
       </View>

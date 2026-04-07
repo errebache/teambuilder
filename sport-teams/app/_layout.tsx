@@ -38,7 +38,6 @@ function AppNavigator() {
         <Stack.Screen name="onboarding" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="tirage" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
       </Stack>
     </>
   )

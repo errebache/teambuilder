@@ -6,6 +6,7 @@ import { planifierRappelMatch } from '../../lib/notifications'
 import { cacheInvalidate } from '../../lib/cache'
 import { useEffect, useRef, useState } from 'react'
 import { Equipe, Joueur } from '../../types'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const COULEURS_EQUIPES = ['#2563eb', '#22c55e', '#f59e0b', '#8b5cf6']
 const COULEURS_TERRAIN = ['#1d4ed8', '#16a34a', '#d97706', '#7c3aed']
@@ -433,6 +434,7 @@ const TERRAIN_EMOJI: Record<string, string> = {
 export default function Resultat() {
   const router = useRouter()
   const { equipes: equipesParam, equilibrePct, groupeId } = useLocalSearchParams()
+  const { t } = useLanguage()
 
   const [equipes, setEquipes] = useState<Equipe[]>(() => {
     try { return JSON.parse(equipesParam as string) ?? [] }
@@ -484,8 +486,8 @@ export default function Resultat() {
       await planifierRappelMatch(
         '',
         dateMatch,
-        'Équipes générées — Équilibre ' + equilibre + '%',
-        equipes.map(e => e.nom + ' (' + e.joueurs.length + ' joueurs)').join(' · ')
+        t('generatedTeams') + ' — ' + t('shareBalanceLabel') + ' ' + equilibre + '%',
+        equipes.map(e => e.nom + ' (' + e.joueurs.length + ' ' + t('playersCount') + ')').join(' · ')
       )
     } catch (e) {
       // silently ignore
@@ -500,7 +502,7 @@ export default function Resultat() {
       return `${eq.nom} : ${joueurs}`
     }).join('\n\n')
     await Share.share({
-      message: `${TERRAIN_EMOJI[sport] ?? '🏆'} Équipes générées !\n\n${texte}\n\nÉquilibre : ${equilibre}%`,
+      message: `${TERRAIN_EMOJI[sport] ?? '🏆'} ${t('shareTeamsTitle')}\n\n${texte}\n\n${t('shareBalanceLabel')} : ${equilibre}%`,
     })
   }
 
@@ -519,18 +521,18 @@ export default function Resultat() {
     <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{
         backgroundColor: '#1e3a5f',
-        paddingTop: 48,
+        paddingTop: 28,
         paddingHorizontal: 20,
-        paddingBottom: 24,
+        paddingBottom: 14,
       }}>
         <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 8 }}>
-          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>←</Text>
+          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>{t('back')}</Text>
         </TouchableOpacity>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
-            <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500' }}>Équipes générées</Text>
-            <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, marginTop: 4 }}>Équilibre {equilibre}%</Text>
+            <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500' }}>{t('generatedTeams')}</Text>
+            <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, marginTop: 4 }}>{t('balance')} {equilibre}%</Text>
           </View>
 
           {/* Toggle Liste / Terrain */}
@@ -547,7 +549,7 @@ export default function Resultat() {
               }}
             >
               <Text style={{ fontSize: 12, fontWeight: '600', color: vue === 'liste' ? '#0f172a' : 'rgba(255,255,255,0.7)' }}>
-                Liste
+                {t('listView')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -558,7 +560,7 @@ export default function Resultat() {
               }}
             >
               <Text style={{ fontSize: 12, fontWeight: '600', color: vue === 'terrain' ? '#0f172a' : 'rgba(255,255,255,0.7)' }}>
-                {TERRAIN_EMOJI[sport] ?? '🏟️'} Terrain
+                {TERRAIN_EMOJI[sport] ?? '🏟️'} {t('pitchView')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -633,13 +635,13 @@ export default function Resultat() {
             onPress={handleRelancer}
             style={{ flex: 1, backgroundColor: '#f1f5f9', borderRadius: 14, padding: 14, alignItems: 'center' }}
           >
-            <Text style={{ color: '#0f172a', fontSize: 14, fontWeight: '500' }}>Relancer</Text>
+            <Text style={{ color: '#0f172a', fontSize: 14, fontWeight: '500' }}>{t('reroll')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handlePartager}
             style={{ flex: 1, backgroundColor: '#2563eb', borderRadius: 14, padding: 14, alignItems: 'center' }}
           >
-            <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>Partager</Text>
+            <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>{t('share')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

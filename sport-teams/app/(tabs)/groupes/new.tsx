@@ -32,11 +32,11 @@ export default function NewGroupe() {
 
     async function handleSubmit() {
         if (nom.length < 2) {
-            setError('Le nom doit faire au moins 2 caractères')
+            setError(t('groupNameMinError'))
             return
         }
         if (!sport) {
-            setError('Choisis un sport')
+            setError(t('chooseSport'))
             return
         }
         const result = await createGroupe(nom, sport, emoji)
@@ -47,9 +47,9 @@ export default function NewGroupe() {
     <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{
         backgroundColor: '#1e3a5f',
-        paddingTop: 48,
+        paddingTop: 28,
         paddingHorizontal: 20,
-        paddingBottom: 28,
+        paddingBottom: 14,
         flexDirection: 'row',
         alignItems: 'flex-end',
         gap: 12,

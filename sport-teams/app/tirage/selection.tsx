@@ -4,11 +4,13 @@ import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router'
 import { useJoueurs } from '../../hooks/useJoueurs'
 import { Play } from 'lucide-react-native'
 import { genererEquipes } from '../../lib/algo-equilibrage'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 export default function Selection() {
   const router = useRouter()
   const { groupeId } = useLocalSearchParams()
   const { joueurs, fetchJoueurs } = useJoueurs(groupeId as string)
+  const { t } = useLanguage()
   const [presents, setPresents] = useState<Set<string>>(new Set())
   const [nbEquipes, setNbEquipes] = useState(2)
 
@@ -53,25 +55,25 @@ export default function Selection() {
     <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{
         backgroundColor: '#1e3a5f',
-        paddingTop: 48,
+        paddingTop: 28,
         paddingHorizontal: 20,
-        paddingBottom: 28,
+        paddingBottom: 14,
       }}>
         <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 8 }}>
-          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>←</Text>
+          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>{t('back')}</Text>
         </TouchableOpacity>
         <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500' }}>
-          Générer les équipes
+          {t('generateTeamsTitle')}
         </Text>
         <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, marginTop: 4 }}>
-          {nbPresents} joueurs sélectionnés
+          {nbPresents} {t('playersSelected')}
         </Text>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
 
         <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20 }}>
-          Nombre d'équipes
+          {t('numberOfTeams')}
         </Text>
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 20 }}>
           {[2, 3, 4].map(n => (
@@ -90,14 +92,14 @@ export default function Selection() {
                 fontSize: 13, fontWeight: '500',
                 color: nbEquipes === n ? '#fff' : '#64748b',
               }}>
-                {n} équipes
+                {n} {t('teamsLabel')}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
         <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20 }}>
-          Joueurs
+          {t('selectionPlayersLabel')}
         </Text>
 
         {joueurs.map(joueur => (
@@ -165,7 +167,7 @@ export default function Selection() {
         >
           <Play size={16} color={nbPresents >= 4 ? '#fff' : '#94a3b8'} />
           <Text style={{ color: nbPresents >= 4 ? '#fff' : '#94a3b8', fontSize: 14, fontWeight: '500' }}>
-            Générer les équipes
+            {t('generateTeams')}
           </Text>
         </TouchableOpacity>
 

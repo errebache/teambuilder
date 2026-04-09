@@ -18,13 +18,13 @@ const POSTES: Record<string, string[]> = {
 
 const SPORTS = Object.keys(POSTES)
 
-const QUALITES_DEF: { key: keyof Qualites; label: string; emoji: string }[] = [
-  { key: 'vitesse',   label: 'Vitesse',        emoji: '⚡' },
-  { key: 'precision', label: 'Précision',       emoji: '🎯' },
-  { key: 'physique',  label: 'Physique',        emoji: '💪' },
-  { key: 'vision',    label: 'Vision de jeu',   emoji: '🧠' },
-  { key: 'defense',   label: 'Défense',         emoji: '🛡️' },
-  { key: 'technique', label: 'Technique',       emoji: '⚽' },
+const QUALITES_KEYS: { key: keyof Qualites; tKey: string; emoji: string }[] = [
+  { key: 'vitesse',   tKey: 'qualityVitesse',   emoji: '⚡' },
+  { key: 'precision', tKey: 'qualityPrecision', emoji: '🎯' },
+  { key: 'physique',  tKey: 'qualityPhysique',  emoji: '💪' },
+  { key: 'vision',    tKey: 'qualityVision',    emoji: '🧠' },
+  { key: 'defense',   tKey: 'qualityDefense',   emoji: '🛡️' },
+  { key: 'technique', tKey: 'qualityTechnique', emoji: '⚽' },
 ]
 
 const DEFAULT_QUALITES: Qualites = { vitesse: 3, precision: 3, physique: 3, vision: 3, defense: 3, technique: 3 }
@@ -104,9 +104,9 @@ export default function EditJoueur() {
     <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{
         backgroundColor: '#1e3a5f',
-        paddingTop: 48,
+        paddingTop: 28,
         paddingHorizontal: 20,
-        paddingBottom: 28,
+        paddingBottom: 14,
       }}>
         <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 8 }}>
           <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>{arrow(isRTL)}</Text>
@@ -138,11 +138,11 @@ export default function EditJoueur() {
         {/* Qualités */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1 }}>
-            Qualités
+            {t('qualities')}
           </Text>
           <View style={{ backgroundColor: '#eff6ff', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 }}>
             <Text style={{ fontSize: 11, fontWeight: '600', color: '#2563eb' }}>
-              Moy. {moyenne(qualites).toFixed(1)} / 5
+              {t('avgLabel')} {moyenne(qualites).toFixed(1)} / 5
             </Text>
           </View>
         </View>
@@ -151,11 +151,11 @@ export default function EditJoueur() {
           backgroundColor: '#ffffff', borderRadius: 14, padding: 16, marginBottom: 20,
           shadowColor: '#0f172a', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2,
         }}>
-          {QUALITES_DEF.map((q, idx) => (
-            <View key={q.key} style={{ marginBottom: idx < QUALITES_DEF.length - 1 ? 16 : 0 }}>
+          {QUALITES_KEYS.map((q, idx) => (
+            <View key={q.key} style={{ marginBottom: idx < QUALITES_KEYS.length - 1 ? 16 : 0 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
                 <Text style={{ fontSize: 15, marginRight: 6 }}>{q.emoji}</Text>
-                <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: '#0f172a' }}>{q.label}</Text>
+                <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: '#0f172a' }}>{t(q.tKey)}</Text>
                 <Text style={{ fontSize: 12, color: '#64748b' }}>{qualites[q.key]} / 5</Text>
               </View>
               <View style={{ flexDirection: 'row', gap: 6 }}>
@@ -175,7 +175,7 @@ export default function EditJoueur() {
         </View>
 
         <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20 }}>
-          Sport
+          {t('sport')}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
           {SPORTS.map(s => (
@@ -197,7 +197,7 @@ export default function EditJoueur() {
         </View>
 
         <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20 }}>
-          Poste
+          {t('position')}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
           {(POSTES[sport] || POSTES.Autre).map(p => (

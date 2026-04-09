@@ -7,13 +7,13 @@ import { useLanguage } from '../../../contexts/LanguageContext'
 
 const COULEURS = ['#2563eb', '#22c55e', '#f59e0b', '#8b5cf6']
 
-function formatDate(dateStr: string): string {
+function formatDate(dateStr: string, t: (key: string) => string): string {
   const date = new Date(dateStr)
   const now = new Date()
   const diff = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
-  if (diff === 0) return "Aujourd'hui"
-  if (diff === 1) return 'Hier'
-  if (diff < 7) return `Il y a ${diff} jours`
+  if (diff === 0) return t('today')
+  if (diff === 1) return t('yesterday')
+  if (diff < 7) return t('daysAgo').replace('{n}', String(diff))
   return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
 }
 
@@ -84,15 +84,15 @@ export default function Historique() {
       {/* Header */}
       <View style={{
         backgroundColor: '#1e3a5f',
-        paddingTop: 48,
+        paddingTop: 28,
         paddingHorizontal: 20,
-        paddingBottom: 28,
+        paddingBottom: 14,
       }}>
         <Text style={{ color: '#fff', fontSize: 24, fontWeight: '600', letterSpacing: -0.3 }}>
           {t('history')}
         </Text>
         <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, marginTop: 4 }}>
-          {tirages.length} match{tirages.length !== 1 ? 's' : ''} joué{tirages.length !== 1 ? 's' : ''}
+          {tirages.length} {tirages.length !== 1 ? t('matchesPlayedCountPlural') : t('matchesPlayedCount')}
         </Text>
 
         {/* Stats rapides */}
@@ -102,16 +102,16 @@ export default function Historique() {
               flex: 1, backgroundColor: 'rgba(255,255,255,0.1)',
               borderRadius: 14, padding: 12,
             }}>
-              <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Dernière partie</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('lastMatch')}</Text>
               <Text style={{ color: '#fff', fontSize: 13, fontWeight: '600', marginTop: 4 }}>
-                {formatDate(tirages[0].date_match)}
+                {formatDate(tirages[0].date_match, t)}
               </Text>
             </View>
             <View style={{
               flex: 1, backgroundColor: 'rgba(255,255,255,0.1)',
               borderRadius: 14, padding: 12,
             }}>
-              <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Meilleur équilibre</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('bestBalance')}</Text>
               <Text style={{ color: '#22c55e', fontSize: 13, fontWeight: '600', marginTop: 4 }}>
                 {tirages.length > 0 ? Math.max(...tirages.map((t: any) => t.equilibre_pct)) : 0}%
               </Text>
@@ -159,10 +159,10 @@ export default function Historique() {
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={{ fontSize: 14, fontWeight: '600', color: '#0f172a' }}>
-                        {tirage.groupes?.nom || 'Groupe'}
+                        {tirage.groupes?.nom || t('groupFallback')}
                       </Text>
                       <Text style={{ fontSize: 12, color: '#64748b', marginTop: 1 }}>
-                        {formatDate(tirage.date_match)}
+                        {formatDate(tirage.date_match, t)}
                       </Text>
                     </View>
                     <View style={{

@@ -158,9 +158,9 @@ export default function Parametres() {
       {/* Header */}
       <View style={{
         backgroundColor: '#1e3a5f',
-        paddingTop: 48,
+        paddingTop: 28,
         paddingHorizontal: 20,
-        paddingBottom: 28,
+        paddingBottom: 14,
       }}>
         <Text style={{ color: '#fff', fontSize: 22, fontWeight: '600', textAlign: textAlign(isRTL) }}>
           {t('settings')}

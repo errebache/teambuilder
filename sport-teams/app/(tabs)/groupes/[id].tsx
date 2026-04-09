@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, TouchableOpacity, Alert, Platform, Share } from 'react-native'
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router'
-import { Plus, Play, Trash2, Copy } from 'lucide-react-native'
+import { Plus, Play, Trash2, Copy, Pencil } from 'lucide-react-native'
 import { useCallback, useState, useEffect } from 'react'
 import { useJoueurs } from '../../../hooks/useJoueurs'
 import { supabase } from '../../../lib/supabase'
@@ -32,19 +32,19 @@ export default function DetailGroupe() {
     if (nouveauMembre !== 'true') return
     if (!hasFetched) return
     const message = joueurs.length === 0
-      ? 'Ce groupe n\'a pas encore de joueurs. Ajoute-toi le premier !'
-      : 'Bienvenue ! Veux-tu t\'ajouter comme joueur ?'
+      ? t('noPlayersFirstMsg')
+      : t('welcomeNewMemberMsg')
     if (Platform.OS === 'web') {
-      const ok = window.confirm(message + '\n\nT\'ajouter maintenant ?')
+      const ok = window.confirm(message + '\n\n' + t('addMeBtn') + ' ?')
       if (ok) router.push(`/(tabs)/joueurs/new?groupeId=${id}`)
     } else {
       Alert.alert(
-        'Bienvenue ! 🎉',
+        t('welcomeTitle'),
         message,
         [
-          { text: 'Plus tard', style: 'cancel' },
+          { text: t('laterBtn'), style: 'cancel' },
           {
-            text: 'M\'ajouter',
+            text: t('addMeBtn'),
             onPress: () => router.push(`/(tabs)/joueurs/new?groupeId=${id}`)
           },
         ]
@@ -53,8 +53,6 @@ export default function DetailGroupe() {
   }, [nouveauMembre, hasFetched])
 
   async function fetchGroupe() {
-    // Déjà chargé depuis le cache — pas de fetch réseau
-    if (groupe) return
     const { data } = await supabase
       .from('groupes')
       .select('*')
@@ -66,12 +64,12 @@ export default function DetailGroupe() {
   async function handleSupprimer() {
     const confirmer = (callback: () => void) => {
       if (Platform.OS === 'web') {
-        const ok = window.confirm('Supprimer ce groupe et tous ses joueurs ?')
+        const ok = window.confirm(t('deleteGroupConfirm'))
         if (ok) callback()
       } else {
         Alert.alert(
-          'Supprimer le groupe',
-          'Tu vas supprimer ce groupe et tous ses joueurs. Cette action est irréversible.',
+          t('deleteGroupTitle'),
+          t('deleteGroupDesc'),
           [
             { text: t('cancel'), style: 'cancel' },
             { text: t('delete'), style: 'destructive', onPress: callback },
@@ -96,10 +94,10 @@ export default function DetailGroupe() {
     if (!groupe?.code) return
     if (Platform.OS === 'web') {
       window.navigator.clipboard.writeText(groupe.code)
-      window.alert('Code copié : ' + groupe.code)
+      window.alert(t('codeCopied') + groupe.code)
     } else {
       await Share.share({
-        message: `Rejoins mon groupe "${groupe.nom}" sur Sport Teams !\n\nCode d'invitation : ${groupe.code}`,
+        message: t('inviteMessage').replace('{name}', groupe.nom).replace('{code}', groupe.code),
       })
     }
   }
@@ -108,9 +106,9 @@ export default function DetailGroupe() {
     <View style={{ flex: 1, backgroundColor: '#f8fafc', paddingBottom: 80 }}>
       <View style={{
         backgroundColor: '#1e3a5f',
-        paddingTop: 48,
+        paddingTop: 28,
         paddingHorizontal: 20,
-        paddingBottom: 28,
+        paddingBottom: 14,
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
           <TouchableOpacity
@@ -124,6 +122,17 @@ export default function DetailGroupe() {
             <Text style={{ color: '#fff', fontSize: 16 }}>←</Text>
           </TouchableOpacity>
           <View style={{ flex: 1 }} />
+          <TouchableOpacity
+            onPress={() => router.push(`/(tabs)/groupes/edit?id=${id}`)}
+            style={{
+              width: 36, height: 36, borderRadius: 18,
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              alignItems: 'center', justifyContent: 'center',
+              marginRight: 8,
+            }}
+          >
+            <Pencil size={16} color="rgba(255,255,255,0.8)" />
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={handleSupprimer}
             style={{
@@ -140,7 +149,7 @@ export default function DetailGroupe() {
           {groupe ? `${groupe.emoji} ${groupe.nom}` : '...'}
         </Text>
         <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, marginTop: 4 }}>
-          {joueurs.length} joueurs · {groupe?.sport || ''}
+          {joueurs.length} {t('playersCount')} · {groupe?.sport || ''}
         </Text>
 
         {groupe?.code && (
@@ -210,7 +219,7 @@ export default function DetailGroupe() {
                   {joueur.prenom} {joueur.nom}
                 </Text>
                 <Text style={{ fontSize: 11, color: '#64748b', marginTop: 1 }}>
-                  {joueur.poste || 'Joueur'}
+                  {joueur.poste || t('playerDefaultRole')}
                 </Text>
               </View>
               <Text style={{ fontSize: 12, color: '#f59e0b' }}>
@@ -258,7 +267,7 @@ export default function DetailGroupe() {
         >
           <Play size={15} color={joueurs.length >= 4 ? '#fff' : '#94a3b8'} />
           <Text style={{ color: joueurs.length >= 4 ? '#fff' : '#94a3b8', fontSize: 13, fontWeight: '500' }}>
-            {joueurs.length < 4 ? `Encore ${4 - joueurs.length}` : t('generateTeams')}
+            {joueurs.length < 4 ? `${4 - joueurs.length} ${t('generateTeamsMin')}` : t('generateTeams')}
           </Text>
         </TouchableOpacity>
       </View>

@@ -67,9 +67,9 @@ export default function Joueurs() {
     <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{
         backgroundColor: '#1e3a5f',
-        paddingTop: 48,
+        paddingTop: 28,
         paddingHorizontal: 20,
-        paddingBottom: 20,
+        paddingBottom: 14,
       }}>
         <Text style={{ color: '#fff', fontSize: 22, fontWeight: '500' }}>
           {t('players')}
@@ -139,7 +139,7 @@ export default function Joueurs() {
 
             {/* Liste complète */}
             <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20 }}>
-              {filtrés.length} JOUEURS
+              {filtrés.length} {t('playersCountLabel')}
             </Text>
 
             {filtrés.map(joueur => (
@@ -175,7 +175,7 @@ export default function Joueurs() {
                     {joueur.prenom} {joueur.nom}
                   </Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                    <Text style={{ fontSize: 11, color: '#64748b' }}>{joueur.poste || 'Joueur'}</Text>
+                    <Text style={{ fontSize: 11, color: '#64748b' }}>{joueur.poste || t('playerDefaultRole')}</Text>
                     {joueur.groupes && (
                       <Text style={{ fontSize: 11, color: '#64748b' }}>
                         · {joueur.groupes.emoji} {joueur.groupes.nom}

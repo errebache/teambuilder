@@ -14,7 +14,7 @@ export default function RejoindreGroupe() {
 
     async function handleRejoindre() {
     if (code.length < 4) {
-        setError('Entre un code valide')
+        setError(t('validCode'))
         return
     }
 
@@ -54,9 +54,9 @@ export default function RejoindreGroupe() {
     <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{
         backgroundColor: '#1e3a5f',
-        paddingTop: 48,
+        paddingTop: 28,
         paddingHorizontal: 20,
-        paddingBottom: 32,
+        paddingBottom: 14,
         alignItems: 'center',
       }}>
         <TouchableOpacity

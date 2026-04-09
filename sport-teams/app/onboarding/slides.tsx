@@ -1,9 +1,11 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import { useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 export default function Slides() {
   const router = useRouter()
+  const { t } = useLanguage()
 
   async function handleStart() {
     await AsyncStorage.setItem('hasLaunched', 'true')
@@ -16,14 +18,14 @@ export default function Slides() {
         Squadra
       </Text>
       <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16, marginBottom: 48 }}>
-        Créez des équipes équilibrées
+        {t('onboardingTagline')}
       </Text>
       <TouchableOpacity
         onPress={handleStart}
         style={{ backgroundColor: '#fff', paddingHorizontal: 32, paddingVertical: 14, borderRadius: 14 }}
       >
         <Text style={{ color: '#1a1a2e', fontWeight: '500', fontSize: 16 }}>
-          Commencer
+          {t('onboardingStart')}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -35,7 +37,7 @@ export default function Slides() {
         }}
       >
         <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>
-          Rejoindre avec un code →
+          {t('onboardingJoin')}
         </Text>
       </TouchableOpacity>
     </View>

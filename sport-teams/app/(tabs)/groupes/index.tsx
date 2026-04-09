@@ -19,9 +19,9 @@ export default function Groupes() {
     <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
       <View style={{
         backgroundColor: '#1e3a5f',
-        paddingTop: 48,
+        paddingTop: 28,
         paddingHorizontal: 20,
-        paddingBottom: 28,
+        paddingBottom: 14,
       }}>
         <View>
           <Text style={{ color: '#fff', fontSize: 26, fontWeight: '700' }}>

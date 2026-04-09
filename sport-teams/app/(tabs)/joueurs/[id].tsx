@@ -21,13 +21,13 @@ const TAGS_DEF = [
   { key: 'Fair-play',   emoji: '🤲' },
 ]
 
-const QUALITES_DEF: { key: keyof Qualites; label: string; emoji: string }[] = [
-  { key: 'vitesse',   label: 'Vitesse',        emoji: '⚡' },
-  { key: 'precision', label: 'Précision',       emoji: '🎯' },
-  { key: 'physique',  label: 'Physique',        emoji: '💪' },
-  { key: 'vision',    label: 'Vision de jeu',   emoji: '🧠' },
-  { key: 'defense',   label: 'Défense',         emoji: '🛡️' },
-  { key: 'technique', label: 'Technique',       emoji: '⚽' },
+const QUALITES_KEYS: { key: keyof Qualites; tKey: string; emoji: string }[] = [
+  { key: 'vitesse',   tKey: 'qualityVitesse',   emoji: '⚡' },
+  { key: 'precision', tKey: 'qualityPrecision', emoji: '🎯' },
+  { key: 'physique',  tKey: 'qualityPhysique',  emoji: '💪' },
+  { key: 'vision',    tKey: 'qualityVision',    emoji: '🧠' },
+  { key: 'defense',   tKey: 'qualityDefense',   emoji: '🛡️' },
+  { key: 'technique', tKey: 'qualityTechnique', emoji: '⚽' },
 ]
 
 export default function ProfilJoueur() {
@@ -79,11 +79,11 @@ export default function ProfilJoueur() {
   async function handleSupprimer() {
     const confirmer = (callback: () => void) => {
       if (Platform.OS === 'web') {
-        if (window.confirm('Supprimer ce joueur ?')) callback()
+        if (window.confirm(t('deletePlayerConfirm'))) callback()
       } else {
         Alert.alert(
-          'Supprimer le joueur',
-          'Cette action est irréversible.',
+          t('deletePlayerTitle'),
+          t('irreversible'),
           [
             { text: t('cancel'), style: 'cancel' },
             { text: t('delete'), style: 'destructive', onPress: callback },
@@ -120,9 +120,9 @@ export default function ProfilJoueur() {
 
       <View style={{
         backgroundColor: '#1e3a5f',
-        paddingTop: 48,
+        paddingTop: 28,
         paddingHorizontal: 20,
-        paddingBottom: 28,
+        paddingBottom: 14,
         alignItems: 'center',
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%', marginBottom: 16 }}>
@@ -163,7 +163,7 @@ export default function ProfilJoueur() {
           {joueur.prenom}
         </Text>
         <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, marginTop: 4 }}>
-          {joueur.poste || 'Joueur'}
+          {joueur.poste || t('playerDefaultRole')}
         </Text>
 
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
@@ -176,7 +176,7 @@ export default function ProfilJoueur() {
             </Text>
           </View>
           <View style={{ backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20 }}>
-            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '500' }}>{avis.length} avis</Text>
+            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '500' }}>{avis.length} {t('avisLabel')}</Text>
           </View>
         </View>
       </View>
@@ -212,11 +212,11 @@ export default function ProfilJoueur() {
           <>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1 }}>
-                Qualités
+                {t('qualities')}
               </Text>
               <View style={{ backgroundColor: '#eff6ff', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 }}>
                 <Text style={{ fontSize: 11, fontWeight: '600', color: '#2563eb' }}>
-                  Moy. {joueur.note_moyenne.toFixed(1)} / 5
+                  {t('avgLabel')} {joueur.note_moyenne.toFixed(1)} / 5
                 </Text>
               </View>
             </View>
@@ -229,11 +229,11 @@ export default function ProfilJoueur() {
               shadowOffset: { width: 0, height: 2 },
               elevation: 2,
             }}>
-              {QUALITES_DEF.map((q, idx) => (
-                <View key={q.key} style={{ marginBottom: idx < QUALITES_DEF.length - 1 ? 14 : 0 }}>
+              {QUALITES_KEYS.map((q, idx) => (
+                <View key={q.key} style={{ marginBottom: idx < QUALITES_KEYS.length - 1 ? 14 : 0 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
                     <Text style={{ fontSize: 14, marginRight: 6 }}>{q.emoji}</Text>
-                    <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: '#0f172a' }}>{q.label}</Text>
+                    <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: '#0f172a' }}>{t(q.tKey)}</Text>
                     <Text style={{ fontSize: 12, color: '#64748b', fontWeight: '600' }}>{qualites[q.key]} / 5</Text>
                   </View>
                   <View style={{ flexDirection: 'row', gap: 4 }}>
@@ -285,7 +285,7 @@ export default function ProfilJoueur() {
           }}>
             <Text style={{ fontSize: 24, marginBottom: 8 }}>💬</Text>
             <Text style={{ fontSize: 14, fontWeight: '500', color: '#0f172a' }}>{t('noReviews')}</Text>
-            <Text style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>Sois le premier à noter ce joueur</Text>
+            <Text style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>{t('beFirstToRate')}</Text>
           </View>
         ) : (
           avis.map(a => (

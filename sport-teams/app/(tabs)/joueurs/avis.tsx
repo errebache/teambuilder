@@ -127,9 +127,9 @@ export default function LaisserAvis() {
       {/* Header */}
       <View style={{
         backgroundColor: colors.header,
-        paddingTop: 44,
+        paddingTop: 28,
         paddingHorizontal: 20,
-        paddingBottom: 28,
+        paddingBottom: 14,
         borderBottomLeftRadius: 22,
         borderBottomRightRadius: 22,
         alignItems: 'center',

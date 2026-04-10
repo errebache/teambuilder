@@ -1,4 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, Share, Dimensions } from 'react-native'
+import AdBanner from '../../components/AdBanner'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { genererEquipes } from '../../lib/algo-equilibrage'
 import { supabase } from '../../lib/supabase'
@@ -644,6 +645,9 @@ export default function Resultat() {
             <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>{t('share')}</Text>
           </TouchableOpacity>
         </View>
+
+        <AdBanner backgroundColor="#f8fafc" />
+
       </ScrollView>
     </View>
   )

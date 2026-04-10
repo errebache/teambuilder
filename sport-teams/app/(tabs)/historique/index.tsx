@@ -4,6 +4,7 @@ import { useFocusEffect } from 'expo-router'
 import { supabase } from '../../../lib/supabase'
 import { cacheGet, cacheSet } from '../../../lib/cache'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import AdBanner from '../../../components/AdBanner'
 
 const COULEURS = ['#2563eb', '#22c55e', '#f59e0b', '#8b5cf6']
 
@@ -119,6 +120,8 @@ export default function Historique() {
           </View>
         )}
       </View>
+
+      <AdBanner backgroundColor="#f8fafc" />
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
 

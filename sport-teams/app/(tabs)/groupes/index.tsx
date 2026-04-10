@@ -4,6 +4,7 @@ import { useRouter, useFocusEffect } from 'expo-router'
 import { Plus } from 'lucide-react-native'
 import { useGroupes } from '../../../hooks/useGroupes'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import AdBanner from '../../../components/AdBanner'
 export default function Groupes() {
   const router = useRouter()
   const { groupes, loading, fetchGroupes } = useGroupes()
@@ -62,6 +63,8 @@ export default function Groupes() {
           </TouchableOpacity>
         </View>
       </View>
+
+      <AdBanner backgroundColor="#f8fafc" />
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
 

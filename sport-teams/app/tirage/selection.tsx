@@ -1,10 +1,11 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router'
 import { useJoueurs } from '../../hooks/useJoueurs'
 import { Play } from 'lucide-react-native'
 import { genererEquipes } from '../../lib/algo-equilibrage'
 import { useLanguage } from '../../contexts/LanguageContext'
+import { createInterstitial, AdEventType } from '../../lib/admob'
 
 export default function Selection() {
   const router = useRouter()
@@ -13,12 +14,57 @@ export default function Selection() {
   const { t } = useLanguage()
   const [presents, setPresents] = useState<Set<string>>(new Set())
   const [nbEquipes, setNbEquipes] = useState(2)
+  const interstitialRef = useRef<any>(null)
+  const adLoadedRef = useRef(false)
+  const pendingNavRef = useRef<(() => void) | null>(null)
 
   useFocusEffect(
     useCallback(() => {
       fetchJoueurs()
     }, [groupeId])
   )
+
+  // Pré-charger l'interstitiel au montage
+  useEffect(() => {
+    let unsubLoaded: (() => void) | undefined
+    let unsubClosed: (() => void) | undefined
+    let unsubError: (() => void) | undefined
+
+    createInterstitial().then(ad => {
+      if (!ad) return
+      interstitialRef.current = ad
+
+      unsubLoaded = ad.addAdEventListener(AdEventType.LOADED, () => {
+        adLoadedRef.current = true
+      })
+      unsubClosed = ad.addAdEventListener(AdEventType.CLOSED, () => {
+        adLoadedRef.current = false
+        // Naviguer après fermeture de la pub
+        if (pendingNavRef.current) {
+          pendingNavRef.current()
+          pendingNavRef.current = null
+        }
+        // Recharger pour la prochaine fois
+        ad.load()
+      })
+      unsubError = ad.addAdEventListener(AdEventType.ERROR, () => {
+        adLoadedRef.current = false
+        // En cas d'erreur, naviguer quand même
+        if (pendingNavRef.current) {
+          pendingNavRef.current()
+          pendingNavRef.current = null
+        }
+      })
+
+      ad.load()
+    })
+
+    return () => {
+      unsubLoaded?.()
+      unsubClosed?.()
+      unsubError?.()
+    }
+  }, [])
 
   // Par défaut tous présents — useEffect pour réagir au chargement async
   useEffect(() => {
@@ -39,7 +85,8 @@ export default function Selection() {
       joueurs: joueursPresents,
       nbEquipes,
     })
-    router.push({
+
+    const navigate = () => router.push({
       pathname: '/tirage/resultat',
       params: {
         equipes: JSON.stringify(equipes),
@@ -47,6 +94,14 @@ export default function Selection() {
         groupeId: groupeId as string,
       }
     })
+
+    // Montrer l'interstitiel si prêt, sinon naviguer directement
+    if (adLoadedRef.current && interstitialRef.current) {
+      pendingNavRef.current = navigate
+      interstitialRef.current.show()
+    } else {
+      navigate()
+    }
   }
 
   const nbPresents = presents.size

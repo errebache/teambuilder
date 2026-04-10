@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useRouter } from 'expo-router'
 import { signInAnonymously } from '../lib/supabase'
 import { demanderPermissions } from '../lib/notifications'
+import { initAdConsent } from '../lib/admob'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { ThemeProvider } from '../contexts/ThemeContext'
 
@@ -14,6 +15,7 @@ function AppNavigator() {
   useEffect(() => {
     checkFirstLaunch()
     demanderPermissions()
+    initAdConsent()
   }, [])
 
   async function checkFirstLaunch() {

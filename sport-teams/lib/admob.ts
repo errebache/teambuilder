@@ -11,17 +11,14 @@ import {
 } from 'react-native-google-mobile-ads'
 
 // ─── IDs de production ────────────────────────────────────────────────────────
-// Android : configurés dans la console AdMob
-// iOS     : remplace XXXXXXXXXX par tes vrais IDs après création dans AdMob
 const PRODUCTION_IDS = {
   android: {
     banner:       'ca-app-pub-2895233972104667/1232136902',
     interstitial: 'ca-app-pub-2895233972104667/4234433713',
   },
   ios: {
-    // ⚠️ À compléter une fois l'app iOS créée dans AdMob console
-    banner:       'ca-app-pub-2895233972104667/XXXXXXXXXX' as string,
-    interstitial: 'ca-app-pub-2895233972104667/XXXXXXXXXX' as string,
+    banner:       'ca-app-pub-2895233972104667/2646023446',
+    interstitial: 'ca-app-pub-2895233972104667/7405952572',
   },
 }
 
@@ -32,12 +29,7 @@ function resolveId(type: 'banner' | 'interstitial'): string {
     return type === 'banner' ? TestIds.ADAPTIVE_BANNER : TestIds.INTERSTITIAL
   }
   if (Platform.OS === 'ios') {
-    const id = PRODUCTION_IDS.ios[type]
-    if (id.includes('XXXXXXXXXX')) {
-      console.warn(`[AdMob] iOS ${type} ID not configured — using test ID`)
-      return type === 'banner' ? TestIds.ADAPTIVE_BANNER : TestIds.INTERSTITIAL
-    }
-    return id
+    return PRODUCTION_IDS.ios[type]
   }
   return PRODUCTION_IDS.android[type]
 }

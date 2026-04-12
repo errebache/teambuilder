@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Bell, Check, ChevronDown, Trash2 } from 'lucide-react-native'
 import { useLanguage, LangCode } from '../../../contexts/LanguageContext'
 import { useTheme, ThemeMode } from '../../../contexts/ThemeContext'
-import { supabase } from '../../../lib/supabase'
+import { supabase, signInAnonymously } from '../../../lib/supabase'
 import { cacheClear } from '../../../lib/cache'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useRouter } from 'expo-router'
@@ -150,14 +150,39 @@ export default function Parametres() {
 
   async function handleResetData() {
     const doReset = async () => {
-      cacheClear()
-      if (Platform.OS === 'web') {
-        localStorage.clear()
-      } else {
-        await AsyncStorage.multiRemove(['hasLaunched', 'app_langue', 'app_theme'])
+      try {
+        // 1. Clear in-memory cache
+        cacheClear()
+
+        // 2. Clear persisted preferences
+        if (Platform.OS === 'web') {
+          localStorage.clear()
+        } else {
+          await AsyncStorage.multiRemove(['hasLaunched', 'app_langue', 'app_theme'])
+        }
+
+        // 3. Sign out current anonymous session
+        await supabase.auth.signOut()
+
+        // 4. CRITICAL: create a fresh anonymous session so Supabase calls work
+        //    when the user returns from onboarding to the main app.
+        //    Without this, all DB queries fail silently after reset.
+        await signInAnonymously()
+
+        // 5. Reset in-memory context state to defaults so the UI reflects
+        //    the cleared storage immediately (no stale values).
+        await setLang('fr')
+        await setMode('system')
+
+        // 6. Navigate to onboarding
+        router.replace('/onboarding/slides')
+      } catch (e) {
+        Alert.alert(
+          'Erreur',
+          'La réinitialisation a échoué. Veuillez redémarrer l\'application.',
+          [{ text: 'OK' }]
+        )
       }
-      await supabase.auth.signOut()
-      router.replace('/onboarding/slides')
     }
 
     if (Platform.OS === 'web') {

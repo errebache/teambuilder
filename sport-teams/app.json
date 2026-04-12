@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "sport-teams",
+    "name": "Squadra",
     "slug": "sport-teams",
     "platforms": [
       "ios",
@@ -10,7 +10,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -21,7 +21,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.errebache.sportteams",
       "infoPlist": {
-        "GADApplicationIdentifier": "ca-app-pub-2895233972104667~XXXXXXXXXX",
+        "GADApplicationIdentifier": "ca-app-pub-2895233972104667~6247737391",
         "SKAdNetworkItems": [
           {
             "SKAdNetworkIdentifier": "cstr6suwn9.skadnetwork"
@@ -38,7 +38,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#1e3a5f"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -54,8 +54,8 @@
       [
         "react-native-google-mobile-ads",
         {
-          "androidAppId": "ca-app-pub-2895233972104667~3688712441",
-          "iosAppId": "ca-app-pub-2895233972104667~XXXXXXXXXX",
+          "androidAppId": "ca-app-pub-2895233972104667~5362953606",
+          "iosAppId": "ca-app-pub-2895233972104667~6247737391",
           "userTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
           "skAdNetworkItems": [
             "cstr6suwn9.skadnetwork",

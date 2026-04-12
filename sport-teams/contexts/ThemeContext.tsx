@@ -1,46 +1,12 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { Platform, useColorScheme } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { LIGHT_COLORS, DARK_COLORS } from '../lib/theme-colors'
+
+export type { ThemeColors } from '../lib/theme-colors'
+export { LIGHT_COLORS, DARK_COLORS } from '../lib/theme-colors'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
-
-export const LIGHT_COLORS = {
-  background: '#F5F5F7',
-  card: '#ffffff',
-  header: '#1e3a5f',
-  headerText: '#fff',
-  text: '#0f172a',
-  textSecondary: '#555',
-  textMuted: '#94a3b8',
-  textPlaceholder: '#cbd5e1',
-  border: 'rgba(0,0,0,0.06)',
-  borderStrong: 'rgba(0,0,0,0.12)',
-  inputBg: '#fff',
-  tag: '#f1f5f9',
-  tagText: '#0f172a',
-  danger: '#ef4444',
-  sectionLabel: '#94a3b8',
-  switchTrackFalse: '#cbd5e1',
-}
-
-export const DARK_COLORS = {
-  background: '#0a0a0f',
-  card: '#13131a',
-  header: '#0d1117',
-  headerText: '#fff',
-  text: '#f1f5f9',
-  textSecondary: '#94a3b8',
-  textMuted: '#475569',
-  textPlaceholder: '#334155',
-  border: 'rgba(255,255,255,0.07)',
-  borderStrong: 'rgba(255,255,255,0.13)',
-  inputBg: '#1e1e2a',
-  tag: '#1e1e2a',
-  tagText: '#f1f5f9',
-  danger: '#f87171',
-  sectionLabel: '#475569',
-  switchTrackFalse: '#334155',
-}
 
 type Colors = typeof LIGHT_COLORS
 
@@ -48,14 +14,14 @@ interface ThemeContextType {
   mode: ThemeMode
   resolved: 'light' | 'dark'
   colors: Colors
-  setMode: (mode: ThemeMode) => void
+  setMode: (mode: ThemeMode) => Promise<void>
 }
 
 const ThemeContext = createContext<ThemeContextType>({
   mode: 'system',
   resolved: 'light',
   colors: LIGHT_COLORS,
-  setMode: () => {},
+  setMode: async () => {},
 })
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

@@ -120,7 +120,6 @@ export default function NewJoueur() {
     }
   }
 
-  const initiales = username.trim().substring(0, 2).toUpperCase()
   const postes = POSTES[sport] || POSTES.Autre
 
   return (
@@ -147,17 +146,6 @@ export default function NewJoueur() {
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
-
-        {/* Avatar preview */}
-        <View style={{ alignItems: 'center', marginBottom: 16 }}>
-          <View style={{
-            width: 64, height: 64, borderRadius: 32,
-            backgroundColor: colors.tag, alignItems: 'center', justifyContent: 'center',
-            borderWidth: 2, borderColor: '#bfdbfe', borderStyle: 'dashed',
-          }}>
-            <Text style={{ fontSize: 20, fontWeight: '500', color: '#2563eb' }}>{initiales || '+'}</Text>
-          </View>
-        </View>
 
         {/* Nom */}
         <Text style={{ fontSize: 11, fontWeight: '700', color: colors.sectionLabel, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20, textAlign: textAlign(isRTL) }}>

@@ -7,10 +7,11 @@ import { signInAnonymously } from '../lib/supabase'
 import { demanderPermissions } from '../lib/notifications'
 import { initAdConsent } from '../lib/admob'
 import { LanguageProvider } from '../contexts/LanguageContext'
-import { ThemeProvider } from '../contexts/ThemeContext'
+import { ThemeProvider, useTheme } from '../contexts/ThemeContext'
 
 function AppNavigator() {
   const router = useRouter()
+  const { resolved } = useTheme()
 
   useEffect(() => {
     checkFirstLaunch()
@@ -34,7 +35,7 @@ function AppNavigator() {
 
   return (
     <>
-      <StatusBar style="light" />
+      <StatusBar style={resolved === 'dark' ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="onboarding" />

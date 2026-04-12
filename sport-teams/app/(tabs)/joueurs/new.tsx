@@ -1,23 +1,31 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native'
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router'
 import { getRandomAvatarColor } from '../../../lib/supabase'
 import { supabase } from '../../../lib/supabase'
-import { cacheInvalidate } from '../../../lib/cache'
-import { Qualites } from '../../../types'
+import { cacheGet, cacheInvalidate } from '../../../lib/cache'
+import { Qualites, Groupe } from '../../../types'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import { useTheme } from '../../../contexts/ThemeContext'
 import { textAlign, arrow } from '../../../lib/rtl'
 
 const POSTES: Record<string, string[]> = {
-  Football: ['Gardien', 'Défenseur', 'Milieu', 'Attaquant'],
+  Football:   ['Gardien', 'Défenseur', 'Milieu', 'Attaquant'],
   Basketball: ['Meneur', 'Ailier', 'Pivot', 'Arrière'],
   Volleyball: ['Passeur', 'Libéro', 'Attaquant', 'Défenseur'],
-  Tennis: ['Joueur'],
-  Rugby: ['Avant', 'Demi', 'Trois-quarts', 'Arrière'],
-  Autre: ['Titulaire', 'Remplaçant'],
+  Tennis:     ['Joueur'],
+  Rugby:      ['Avant', 'Demi', 'Trois-quarts', 'Arrière'],
+  Autre:      ['Titulaire', 'Remplaçant'],
 }
 
-const SPORTS = Object.keys(POSTES)
+const SPORT_EMOJI: Record<string, string> = {
+  Football:   '⚽',
+  Basketball: '🏀',
+  Volleyball: '🏐',
+  Tennis:     '🎾',
+  Rugby:      '🏉',
+  Autre:      '🏟️',
+}
 
 const QUALITES_KEYS: { key: keyof Qualites; tKey: string; emoji: string }[] = [
   { key: 'vitesse',   tKey: 'qualityVitesse',   emoji: '⚡' },
@@ -38,18 +46,46 @@ function moyenne(q: Qualites): number {
 export default function NewJoueur() {
   const router = useRouter()
   const { t, isRTL } = useLanguage()
+  const { colors } = useTheme()
   const { groupeId } = useLocalSearchParams()
+
   const [username, setUsername] = useState('')
   const [sport, setSport] = useState('Football')
+  const [groupeNom, setGroupeNom] = useState('')
   const [poste, setPoste] = useState('')
   const [qualites, setQualites] = useState<Qualites>({ ...DEFAULT_QUALITES })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+  // Fetch group sport once on mount
+  useEffect(() => {
+    fetchGroupeSport()
+  }, [groupeId])
+
+  async function fetchGroupeSport() {
+    // Try cache first
+    const cached = cacheGet<Groupe[]>('groupes')
+    const fromCache = cached?.find(g => g.id === groupeId)
+    if (fromCache) {
+      setSport(fromCache.sport || 'Football')
+      setGroupeNom(fromCache.nom)
+      return
+    }
+    // Fallback to Supabase
+    const { data } = await supabase
+      .from('groupes')
+      .select('sport, nom')
+      .eq('id', groupeId)
+      .single()
+    if (data) {
+      setSport(data.sport || 'Football')
+      setGroupeNom(data.nom)
+    }
+  }
+
   useFocusEffect(
     useCallback(() => {
       setUsername('')
-      setSport('Football')
       setPoste('')
       setQualites({ ...DEFAULT_QUALITES })
       setError('')
@@ -85,17 +121,29 @@ export default function NewJoueur() {
   }
 
   const initiales = username.trim().substring(0, 2).toUpperCase()
+  const postes = POSTES[sport] || POSTES.Autre
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{
-        backgroundColor: '#1e3a5f',
+        backgroundColor: colors.header,
         paddingTop: 28, paddingHorizontal: 20, paddingBottom: 14,
       }}>
         <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 8 }}>
           <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>{arrow(isRTL)}</Text>
         </TouchableOpacity>
-        <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500', textAlign: textAlign(isRTL) }}>{t('addPlayer')}</Text>
+        <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500', textAlign: textAlign(isRTL) }}>
+          {t('addPlayer')}
+        </Text>
+        {/* Sport badge — automatiquement hérité du groupe */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
+          <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>
+            {SPORT_EMOJI[sport] ?? '🏟️'} {sport}
+          </Text>
+          {groupeNom ? (
+            <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>· {groupeNom}</Text>
+          ) : null}
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
@@ -104,7 +152,7 @@ export default function NewJoueur() {
         <View style={{ alignItems: 'center', marginBottom: 16 }}>
           <View style={{
             width: 64, height: 64, borderRadius: 32,
-            backgroundColor: '#eff6ff', alignItems: 'center', justifyContent: 'center',
+            backgroundColor: colors.tag, alignItems: 'center', justifyContent: 'center',
             borderWidth: 2, borderColor: '#bfdbfe', borderStyle: 'dashed',
           }}>
             <Text style={{ fontSize: 20, fontWeight: '500', color: '#2563eb' }}>{initiales || '+'}</Text>
@@ -112,25 +160,48 @@ export default function NewJoueur() {
         </View>
 
         {/* Nom */}
-        <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20, textAlign: textAlign(isRTL) }}>
+        <Text style={{ fontSize: 11, fontWeight: '700', color: colors.sectionLabel, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20, textAlign: textAlign(isRTL) }}>
           {t('firstName')}
         </Text>
         <TextInput
           value={username}
           onChangeText={setUsername}
           placeholder={t('firstName')}
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={colors.textPlaceholder}
+          autoFocus
           style={{
-            backgroundColor: '#ffffff', borderRadius: 12,
-            padding: 12, fontSize: 14, color: '#0f172a',
-            borderWidth: 1, borderColor: '#e2e8f0', marginBottom: 20,
+            backgroundColor: colors.inputBg, borderRadius: 12,
+            padding: 12, fontSize: 14, color: colors.text,
+            borderWidth: 1, borderColor: colors.borderStrong, marginBottom: 20,
             textAlign: textAlign(isRTL),
           }}
         />
 
+        {/* Poste — basé sur le sport du groupe */}
+        <Text style={{ fontSize: 11, fontWeight: '700', color: colors.sectionLabel, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20 }}>
+          {t('position')}
+        </Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
+          {postes.map(p => (
+            <TouchableOpacity
+              key={p}
+              onPress={() => setPoste(p)}
+              style={{
+                paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20,
+                backgroundColor: poste === p ? '#2563eb' : colors.card,
+                borderWidth: 1, borderColor: poste === p ? '#2563eb' : colors.borderStrong,
+              }}
+            >
+              <Text style={{ fontSize: 13, fontWeight: '500', color: poste === p ? '#fff' : colors.textSecondary }}>
+                {p}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
         {/* Qualités */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1 }}>
+          <Text style={{ fontSize: 11, fontWeight: '700', color: colors.sectionLabel, textTransform: 'uppercase', letterSpacing: 1 }}>
             {t('qualities')}
           </Text>
           <View style={{ backgroundColor: '#eff6ff', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 }}>
@@ -141,15 +212,15 @@ export default function NewJoueur() {
         </View>
 
         <View style={{
-          backgroundColor: '#ffffff', borderRadius: 14, padding: 16, marginBottom: 20,
+          backgroundColor: colors.card, borderRadius: 14, padding: 16, marginBottom: 24,
           shadowColor: '#0f172a', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2,
         }}>
           {QUALITES_KEYS.map((q, idx) => (
             <View key={q.key} style={{ marginBottom: idx < QUALITES_KEYS.length - 1 ? 16 : 0 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
                 <Text style={{ fontSize: 15, marginRight: 6 }}>{q.emoji}</Text>
-                <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: '#0f172a' }}>{t(q.tKey)}</Text>
-                <Text style={{ fontSize: 12, color: '#64748b' }}>{qualites[q.key]} / 5</Text>
+                <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: colors.text }}>{t(q.tKey)}</Text>
+                <Text style={{ fontSize: 12, color: colors.textSecondary }}>{qualites[q.key]} / 5</Text>
               </View>
               <View style={{ flexDirection: 'row', gap: 6 }}>
                 {[1, 2, 3, 4, 5].map(n => (
@@ -158,7 +229,7 @@ export default function NewJoueur() {
                     onPress={() => setQ(q.key, n)}
                     style={{
                       flex: 1, height: 8, borderRadius: 4,
-                      backgroundColor: n <= qualites[q.key] ? '#2563eb' : '#e2e8f0',
+                      backgroundColor: n <= qualites[q.key] ? '#2563eb' : colors.borderStrong,
                     }}
                   />
                 ))}
@@ -167,47 +238,7 @@ export default function NewJoueur() {
           ))}
         </View>
 
-        {/* Sport */}
-        <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20 }}>
-          {t('sport')}
-        </Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-          {SPORTS.map(s => (
-            <TouchableOpacity
-              key={s}
-              onPress={() => { setSport(s); setPoste('') }}
-              style={{
-                paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
-                backgroundColor: sport === s ? '#2563eb' : '#ffffff',
-                borderWidth: 1, borderColor: sport === s ? '#2563eb' : '#e2e8f0',
-              }}
-            >
-              <Text style={{ fontSize: 12, fontWeight: '500', color: sport === s ? '#fff' : '#64748b' }}>{s}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Poste */}
-        <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20 }}>
-          {t('position')}
-        </Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
-          {(POSTES[sport] || POSTES.Autre).map(p => (
-            <TouchableOpacity
-              key={p}
-              onPress={() => setPoste(p)}
-              style={{
-                paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
-                backgroundColor: poste === p ? '#2563eb' : '#ffffff',
-                borderWidth: 1, borderColor: poste === p ? '#2563eb' : '#e2e8f0',
-              }}
-            >
-              <Text style={{ fontSize: 12, fontWeight: '500', color: poste === p ? '#fff' : '#64748b' }}>{p}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {error ? <Text style={{ color: '#ef4444', fontSize: 12, marginBottom: 12 }}>{error}</Text> : null}
+        {error ? <Text style={{ color: colors.danger, fontSize: 12, marginBottom: 12 }}>{error}</Text> : null}
 
         <TouchableOpacity
           onPress={handleSubmit}

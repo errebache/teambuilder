@@ -120,7 +120,7 @@ export default function LaisserAvis() {
     }
   }
 
-  if (!joueur) return <View style={{ flex: 1, backgroundColor: '#1e3a5f' }} />
+  if (!joueur) return <View style={{ flex: 1, backgroundColor: colors.header }} />
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>

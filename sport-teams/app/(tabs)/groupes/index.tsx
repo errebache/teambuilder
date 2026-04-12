@@ -4,11 +4,14 @@ import { useRouter, useFocusEffect } from 'expo-router'
 import { Plus } from 'lucide-react-native'
 import { useGroupes } from '../../../hooks/useGroupes'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import { useTheme } from '../../../contexts/ThemeContext'
 import AdBanner from '../../../components/AdBanner'
+
 export default function Groupes() {
   const router = useRouter()
   const { groupes, loading, fetchGroupes } = useGroupes()
   const { t } = useLanguage()
+  const { colors } = useTheme()
 
   useFocusEffect(
     useCallback(() => {
@@ -17,9 +20,9 @@ export default function Groupes() {
   )
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{
-        backgroundColor: '#1e3a5f',
+        backgroundColor: colors.header,
         paddingTop: 28,
         paddingHorizontal: 20,
         paddingBottom: 14,
@@ -28,7 +31,7 @@ export default function Groupes() {
           <Text style={{ color: '#fff', fontSize: 26, fontWeight: '700' }}>
             {t('hello')}
           </Text>
-          <Text style={{ color: '#94a3b8', fontSize: 14, marginTop: 4 }}>
+          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, marginTop: 4 }}>
             {groupes.length} {t('activeGroups')}
           </Text>
         </View>
@@ -64,12 +67,12 @@ export default function Groupes() {
         </View>
       </View>
 
-      <AdBanner backgroundColor="#f8fafc" />
+      <AdBanner backgroundColor={colors.background} />
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
 
         <Text style={{
-          fontSize: 11, fontWeight: '700', color: '#94a3b8',
+          fontSize: 11, fontWeight: '700', color: colors.sectionLabel,
           textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20,
         }}>
           {t('myGroups')}
@@ -81,7 +84,7 @@ export default function Groupes() {
               key={groupe.id}
               onPress={() => router.push(`/(tabs)/groupes/${groupe.id}`)}
               style={{
-                backgroundColor: '#ffffff',
+                backgroundColor: colors.card,
                 borderRadius: 16,
                 padding: 16,
                 marginBottom: 8,
@@ -98,17 +101,17 @@ export default function Groupes() {
               <View style={{
                 width: 42, height: 42,
                 borderRadius: 14,
-                backgroundColor: '#eff6ff',
+                backgroundColor: colors.tag,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
                 <Text style={{ fontSize: 22 }}>{groupe.emoji}</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 14, fontWeight: '500', color: '#0f172a' }}>
+                <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>
                   {groupe.nom}
                 </Text>
-                <Text style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>
+                <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 2 }}>
                   {groupe.sport}
                 </Text>
               </View>
@@ -121,12 +124,12 @@ export default function Groupes() {
                   {t('active')}
                 </Text>
               </View>
-              <Text style={{ color: '#94a3b8', fontSize: 18 }}>›</Text>
+              <Text style={{ color: colors.textMuted, fontSize: 18 }}>›</Text>
             </TouchableOpacity>
           ))
         ) : !loading ? (
           <View style={{
-            backgroundColor: '#ffffff', borderRadius: 16, padding: 40,
+            backgroundColor: colors.card, borderRadius: 16, padding: 40,
             alignItems: 'center', marginTop: 8,
             shadowColor: '#0f172a',
             shadowOpacity: 0.06,
@@ -135,10 +138,10 @@ export default function Groupes() {
             elevation: 2,
           }}>
             <Text style={{ fontSize: 64, marginBottom: 12 }}>⚽</Text>
-            <Text style={{ fontSize: 16, fontWeight: '500', color: '#0f172a' }}>
+            <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text }}>
               {t('noGroups')}
             </Text>
-            <Text style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>
+            <Text style={{ fontSize: 13, color: colors.textSecondary, marginTop: 4 }}>
               {t('createFirst')}
             </Text>
           </View>

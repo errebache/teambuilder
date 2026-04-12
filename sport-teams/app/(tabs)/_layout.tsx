@@ -1,21 +1,23 @@
 import { Tabs } from 'expo-router'
 import { View } from 'react-native'
-import { LayoutGrid, Users, Clock, UserCog } from 'lucide-react-native'
+import { LayoutGrid, Users, Clock, Settings2 } from 'lucide-react-native'
+import { useTheme } from '../../contexts/ThemeContext'
 
 export default function TabsLayout() {
+  const { colors } = useTheme()
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#ffffff',
+          backgroundColor: colors.card,
           borderTopWidth: 1,
-          borderTopColor: '#e2e8f0',
+          borderTopColor: colors.borderStrong,
           height: 64,
           paddingBottom: 10,
         },
         tabBarActiveTintColor: '#2563eb',
-        tabBarInactiveTintColor: '#94a3b8',
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarShowLabel: false,
       }}
     >
@@ -81,7 +83,7 @@ export default function TabsLayout() {
         options={{
           tabBarIcon: ({ color, focused }) => (
             <View style={{ alignItems: 'center', gap: 3 }}>
-              <UserCog size={20} color={color} />
+              <Settings2 size={20} color={color} />
               {focused && (
                 <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#2563eb' }} />
               )}

@@ -4,6 +4,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router'
 import { supabase } from '../../../lib/supabase'
 import { cacheInvalidate } from '../../../lib/cache'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import { useTheme } from '../../../contexts/ThemeContext'
 import { textAlign, arrow } from '../../../lib/rtl'
 
 const SPORTS = ['Football', 'Basketball', 'Volleyball', 'Tennis', 'Rugby', 'Autre']
@@ -13,6 +14,7 @@ export default function EditGroupe() {
   const router = useRouter()
   const { id } = useLocalSearchParams()
   const { t, isRTL } = useLanguage()
+  const { colors } = useTheme()
 
   const [nom, setNom] = useState('')
   const [sport, setSport] = useState('')
@@ -69,14 +71,14 @@ export default function EditGroupe() {
   }
 
   if (!fetched) {
-    return <View style={{ flex: 1, backgroundColor: '#f8fafc' }} />
+    return <View style={{ flex: 1, backgroundColor: colors.background }} />
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Header */}
       <View style={{
-        backgroundColor: '#1e3a5f',
+        backgroundColor: colors.header,
         paddingTop: 28,
         paddingHorizontal: 20,
         paddingBottom: 14,
@@ -96,7 +98,7 @@ export default function EditGroupe() {
 
         {/* Emoji */}
         <Text style={{
-          fontSize: 11, fontWeight: '700', color: '#94a3b8',
+          fontSize: 11, fontWeight: '700', color: colors.sectionLabel,
           textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20,
         }}>
           {t('emoji')}
@@ -108,7 +110,7 @@ export default function EditGroupe() {
               onPress={() => setEmoji(e)}
               style={{
                 width: 44, height: 44, borderRadius: 14,
-                backgroundColor: emoji === e ? '#2563eb' : '#ffffff',
+                backgroundColor: emoji === e ? '#2563eb' : colors.card,
                 alignItems: 'center', justifyContent: 'center',
                 shadowColor: '#0f172a', shadowOpacity: 0.06,
                 shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2,
@@ -121,7 +123,7 @@ export default function EditGroupe() {
 
         {/* Nom */}
         <Text style={{
-          fontSize: 11, fontWeight: '700', color: '#94a3b8',
+          fontSize: 11, fontWeight: '700', color: colors.sectionLabel,
           textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20,
         }}>
           {t('groupName')}
@@ -130,18 +132,18 @@ export default function EditGroupe() {
           value={nom}
           onChangeText={v => { setNom(v); setError('') }}
           placeholder={t('groupNamePlaceholder')}
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={colors.textPlaceholder}
           style={{
-            backgroundColor: '#ffffff', borderRadius: 12,
-            padding: 14, fontSize: 14, color: '#0f172a',
-            borderWidth: 1, borderColor: '#e2e8f0', marginBottom: 16,
+            backgroundColor: colors.inputBg, borderRadius: 12,
+            padding: 14, fontSize: 14, color: colors.text,
+            borderWidth: 1, borderColor: colors.borderStrong, marginBottom: 16,
             textAlign: textAlign(isRTL),
           }}
         />
 
         {/* Sport */}
         <Text style={{
-          fontSize: 11, fontWeight: '700', color: '#94a3b8',
+          fontSize: 11, fontWeight: '700', color: colors.sectionLabel,
           textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20,
         }}>
           {t('sport')}
@@ -153,13 +155,13 @@ export default function EditGroupe() {
               onPress={() => setSport(s)}
               style={{
                 paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20,
-                backgroundColor: sport === s ? '#2563eb' : '#ffffff',
-                borderWidth: 1, borderColor: sport === s ? '#2563eb' : '#e2e8f0',
+                backgroundColor: sport === s ? '#2563eb' : colors.card,
+                borderWidth: 1, borderColor: sport === s ? '#2563eb' : colors.borderStrong,
               }}
             >
               <Text style={{
                 fontSize: 13, fontWeight: '500',
-                color: sport === s ? '#fff' : '#64748b',
+                color: sport === s ? '#fff' : colors.textSecondary,
               }}>
                 {s}
               </Text>
@@ -168,19 +170,19 @@ export default function EditGroupe() {
         </View>
 
         {error ? (
-          <Text style={{ color: '#ef4444', fontSize: 12, marginBottom: 12 }}>{error}</Text>
+          <Text style={{ color: colors.danger, fontSize: 12, marginBottom: 12 }}>{error}</Text>
         ) : null}
 
         <TouchableOpacity
           onPress={handleSave}
           disabled={loading}
           style={{
-            backgroundColor: nom.trim().length >= 2 && sport && !loading ? '#2563eb' : '#e2e8f0',
+            backgroundColor: nom.trim().length >= 2 && sport && !loading ? '#2563eb' : colors.tag,
             borderRadius: 14, padding: 14, alignItems: 'center',
           }}
         >
           <Text style={{
-            color: nom.trim().length >= 2 && sport && !loading ? '#fff' : '#94a3b8',
+            color: nom.trim().length >= 2 && sport && !loading ? '#fff' : colors.textMuted,
             fontSize: 14, fontWeight: '500',
           }}>
             {loading ? t('registering') : t('saveChanges')}

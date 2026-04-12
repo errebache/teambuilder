@@ -5,6 +5,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-nativ
 import { useRouter } from 'expo-router'
 import { useGroupes } from '../../../hooks/useGroupes'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import { useTheme } from '../../../contexts/ThemeContext'
 import { textAlign, arrow } from '../../../lib/rtl'
 
 const SPORTS = ['Football', 'Basketball', 'Volleyball', 'Tennis', 'Rugby', 'Autre']
@@ -13,40 +14,39 @@ const EMOJIS = ['⚽', '🏀', '🏐', '🎾', '🏈', '🥊', '🏊', '🎯', '
 export default function NewGroupe() {
   const router = useRouter()
   const { t, isRTL } = useLanguage()
+  const { colors } = useTheme()
   const [nom, setNom] = useState('')
   const [sport, setSport] = useState('')
   const [emoji, setEmoji] = useState('⚽')
   const [error, setError] = useState('')
   const { createGroupe } = useGroupes()
 
+  useFocusEffect(
+    useCallback(() => {
+      setNom('')
+      setSport('')
+      setEmoji('⚽')
+      setError('')
+    }, [])
+  )
 
-    useFocusEffect(
-      useCallback(() => {
-        setNom('')
-        setSport('')
-        setEmoji('⚽')
-        setError('')
-      }, [])
-    )
-
-
-    async function handleSubmit() {
-        if (nom.length < 2) {
-            setError(t('groupNameMinError'))
-            return
-        }
-        if (!sport) {
-            setError(t('chooseSport'))
-            return
-        }
-        const result = await createGroupe(nom, sport, emoji)
-        if (result) router.replace('/(tabs)/groupes')
+  async function handleSubmit() {
+    if (nom.length < 2) {
+      setError(t('groupNameMinError'))
+      return
     }
+    if (!sport) {
+      setError(t('chooseSport'))
+      return
+    }
+    const result = await createGroupe(nom, sport, emoji)
+    if (result) router.replace('/(tabs)/groupes')
+  }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{
-        backgroundColor: '#1e3a5f',
+        backgroundColor: colors.header,
         paddingTop: 28,
         paddingHorizontal: 20,
         paddingBottom: 14,
@@ -64,7 +64,7 @@ export default function NewGroupe() {
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
 
-        <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20 }}>
+        <Text style={{ fontSize: 11, fontWeight: '700', color: colors.sectionLabel, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20 }}>
           {t('emoji')}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
@@ -75,7 +75,7 @@ export default function NewGroupe() {
               style={{
                 width: 44, height: 44,
                 borderRadius: 14,
-                backgroundColor: emoji === e ? '#2563eb' : '#ffffff',
+                backgroundColor: emoji === e ? '#2563eb' : colors.card,
                 alignItems: 'center',
                 justifyContent: 'center',
                 shadowColor: '#0f172a',
@@ -90,28 +90,28 @@ export default function NewGroupe() {
           ))}
         </View>
 
-        <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20 }}>
+        <Text style={{ fontSize: 11, fontWeight: '700', color: colors.sectionLabel, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20 }}>
           {t('groupName')}
         </Text>
         <TextInput
           value={nom}
           onChangeText={setNom}
           placeholder={t('groupNamePlaceholder')}
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={colors.textPlaceholder}
           style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: colors.inputBg,
             borderRadius: 12,
             padding: 14,
             fontSize: 14,
-            color: '#0f172a',
+            color: colors.text,
             borderWidth: 1,
-            borderColor: '#e2e8f0',
+            borderColor: colors.borderStrong,
             marginBottom: 16,
             textAlign: textAlign(isRTL),
           }}
         />
 
-        <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20 }}>
+        <Text style={{ fontSize: 11, fontWeight: '700', color: colors.sectionLabel, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 20 }}>
           {t('sport')}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
@@ -123,15 +123,15 @@ export default function NewGroupe() {
                 paddingHorizontal: 16,
                 paddingVertical: 8,
                 borderRadius: 20,
-                backgroundColor: sport === s ? '#2563eb' : '#ffffff',
+                backgroundColor: sport === s ? '#2563eb' : colors.card,
                 borderWidth: 1,
-                borderColor: sport === s ? '#2563eb' : '#e2e8f0',
+                borderColor: sport === s ? '#2563eb' : colors.borderStrong,
               }}
             >
               <Text style={{
                 fontSize: 13,
                 fontWeight: '500',
-                color: sport === s ? '#fff' : '#64748b',
+                color: sport === s ? '#fff' : colors.textSecondary,
               }}>
                 {s}
               </Text>
@@ -140,7 +140,7 @@ export default function NewGroupe() {
         </View>
 
         {error ? (
-          <Text style={{ color: '#ef4444', fontSize: 12, marginBottom: 12 }}>
+          <Text style={{ color: colors.danger, fontSize: 12, marginBottom: 12 }}>
             {error}
           </Text>
         ) : null}
@@ -148,13 +148,13 @@ export default function NewGroupe() {
         <TouchableOpacity
           onPress={handleSubmit}
           style={{
-            backgroundColor: nom.length >= 2 && sport ? '#2563eb' : '#e2e8f0',
+            backgroundColor: nom.length >= 2 && sport ? '#2563eb' : colors.tag,
             borderRadius: 14,
             padding: 14,
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: nom.length >= 2 && sport ? '#fff' : '#94a3b8', fontSize: 14, fontWeight: '500' }}>
+          <Text style={{ color: nom.length >= 2 && sport ? '#fff' : colors.textMuted, fontSize: 14, fontWeight: '500' }}>
             {t('createGroupBtn')}
           </Text>
         </TouchableOpacity>

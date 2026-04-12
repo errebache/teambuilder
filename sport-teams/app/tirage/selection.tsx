@@ -5,6 +5,7 @@ import { useJoueurs } from '../../hooks/useJoueurs'
 import { Play } from 'lucide-react-native'
 import { genererEquipes } from '../../lib/algo-equilibrage'
 import { useLanguage } from '../../contexts/LanguageContext'
+import { useTheme } from '../../contexts/ThemeContext'
 import { createInterstitial, AdEventType } from '../../lib/admob'
 
 export default function Selection() {
@@ -12,6 +13,7 @@ export default function Selection() {
   const { groupeId } = useLocalSearchParams()
   const { joueurs, fetchJoueurs } = useJoueurs(groupeId as string)
   const { t } = useLanguage()
+  const { colors } = useTheme()
   const [presents, setPresents] = useState<Set<string>>(new Set())
   const [nbEquipes, setNbEquipes] = useState(2)
   const interstitialRef = useRef<any>(null)
@@ -107,9 +109,9 @@ export default function Selection() {
   const nbPresents = presents.size
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{
-        backgroundColor: '#1e3a5f',
+        backgroundColor: colors.header,
         paddingTop: 28,
         paddingHorizontal: 20,
         paddingBottom: 14,
@@ -127,7 +129,7 @@ export default function Selection() {
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
 
-        <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20 }}>
+        <Text style={{ fontSize: 11, fontWeight: '700', color: colors.sectionLabel, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20 }}>
           {t('numberOfTeams')}
         </Text>
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 20 }}>
@@ -138,14 +140,14 @@ export default function Selection() {
               style={{
                 paddingHorizontal: 20, paddingVertical: 10,
                 borderRadius: 10,
-                backgroundColor: nbEquipes === n ? '#2563eb' : '#ffffff',
+                backgroundColor: nbEquipes === n ? '#2563eb' : colors.card,
                 borderWidth: 1,
-                borderColor: nbEquipes === n ? '#2563eb' : '#e2e8f0',
+                borderColor: nbEquipes === n ? '#2563eb' : colors.borderStrong,
               }}
             >
               <Text style={{
                 fontSize: 13, fontWeight: '500',
-                color: nbEquipes === n ? '#fff' : '#64748b',
+                color: nbEquipes === n ? '#fff' : colors.textSecondary,
               }}>
                 {n} {t('teamsLabel')}
               </Text>
@@ -153,7 +155,7 @@ export default function Selection() {
           ))}
         </View>
 
-        <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20 }}>
+        <Text style={{ fontSize: 11, fontWeight: '700', color: colors.sectionLabel, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20 }}>
           {t('selectionPlayersLabel')}
         </Text>
 
@@ -162,7 +164,7 @@ export default function Selection() {
             key={joueur.id}
             onPress={() => togglePresent(joueur.id)}
             style={{
-              backgroundColor: '#ffffff',
+              backgroundColor: colors.card,
               borderRadius: 14,
               padding: 12,
               marginBottom: 6,
@@ -186,7 +188,7 @@ export default function Selection() {
                 {joueur.prenom.substring(0,2).toUpperCase()}
               </Text>
             </View>
-            <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: '#0f172a' }}>
+            <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: colors.text }}>
               {joueur.prenom} {joueur.nom}
             </Text>
             <Text style={{ fontSize: 12, color: '#f59e0b' }}>
@@ -194,9 +196,9 @@ export default function Selection() {
             </Text>
             <View style={{
               width: 20, height: 20, borderRadius: 10,
-              backgroundColor: presents.has(joueur.id) ? '#2563eb' : '#ffffff',
+              backgroundColor: presents.has(joueur.id) ? '#2563eb' : colors.card,
               borderWidth: 1.5,
-              borderColor: presents.has(joueur.id) ? '#2563eb' : '#e2e8f0',
+              borderColor: presents.has(joueur.id) ? '#2563eb' : colors.borderStrong,
               alignItems: 'center', justifyContent: 'center',
             }}>
               {presents.has(joueur.id) && (
@@ -210,7 +212,7 @@ export default function Selection() {
           onPress={handleGenerer}
           disabled={nbPresents < 4}
           style={{
-            backgroundColor: nbPresents >= 4 ? '#22c55e' : '#e2e8f0',
+            backgroundColor: nbPresents >= 4 ? '#22c55e' : colors.tag,
             borderRadius: 14,
             padding: 14,
             alignItems: 'center',
@@ -220,8 +222,8 @@ export default function Selection() {
             marginTop: 16,
           }}
         >
-          <Play size={16} color={nbPresents >= 4 ? '#fff' : '#94a3b8'} />
-          <Text style={{ color: nbPresents >= 4 ? '#fff' : '#94a3b8', fontSize: 14, fontWeight: '500' }}>
+          <Play size={16} color={nbPresents >= 4 ? '#fff' : colors.textMuted} />
+          <Text style={{ color: nbPresents >= 4 ? '#fff' : colors.textMuted, fontSize: 14, fontWeight: '500' }}>
             {t('generateTeams')}
           </Text>
         </TouchableOpacity>

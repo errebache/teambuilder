@@ -4,6 +4,7 @@ import { useRouter, useFocusEffect } from 'expo-router'
 import { supabase } from '../../../lib/supabase'
 import { Joueur } from '../../../types'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import { useTheme } from '../../../contexts/ThemeContext'
 import { textAlign } from '../../../lib/rtl'
 
 type JoueurAvecGroupe = Joueur & {
@@ -13,6 +14,7 @@ type JoueurAvecGroupe = Joueur & {
 export default function Joueurs() {
   const router = useRouter()
   const { t, isRTL } = useLanguage()
+  const { colors } = useTheme()
   const [joueurs, setJoueurs] = useState<JoueurAvecGroupe[]>([])
   const [loading, setLoading] = useState(false)
   const [recherche, setRecherche] = useState('')
@@ -64,9 +66,9 @@ export default function Joueurs() {
   const podiumPos = top3.length === 3 ? [2, 1, 3] : [1, 2, 3]
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{
-        backgroundColor: '#1e3a5f',
+        backgroundColor: colors.header,
         paddingTop: 28,
         paddingHorizontal: 20,
         paddingBottom: 14,
@@ -99,14 +101,13 @@ export default function Joueurs() {
             {/* TOP 3 podium */}
             {!recherche && top3.length >= 2 && (
               <View style={{ marginBottom: 20 }}>
-                <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12, marginTop: 20 }}>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: colors.sectionLabel, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12, marginTop: 20 }}>
                   🏆 TOP
                 </Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', gap: 12 }}>
                   {podiumOrder.map((j, idx) => {
                     const pos = podiumPos[idx]
                     const medals = ['🥇', '🥈', '🥉']
-                    const heights = [90, 110, 75]
                     return (
                       <TouchableOpacity
                         key={j.id}
@@ -124,7 +125,7 @@ export default function Joueurs() {
                             {j.prenom.substring(0,2).toUpperCase()}
                           </Text>
                         </View>
-                        <Text style={{ fontSize: 11, fontWeight: '500', color: '#0f172a', textAlign: 'center' }} numberOfLines={1}>
+                        <Text style={{ fontSize: 11, fontWeight: '500', color: colors.text, textAlign: 'center' }} numberOfLines={1}>
                           {j.prenom}
                         </Text>
                         <Text style={{ fontSize: 10, color: '#f59e0b' }}>
@@ -138,7 +139,7 @@ export default function Joueurs() {
             )}
 
             {/* Liste complète */}
-            <Text style={{ fontSize: 11, fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20 }}>
+            <Text style={{ fontSize: 11, fontWeight: '700', color: colors.sectionLabel, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20 }}>
               {filtrés.length} {t('playersCountLabel')}
             </Text>
 
@@ -147,7 +148,7 @@ export default function Joueurs() {
                 key={joueur.id}
                 onPress={() => router.push(`/(tabs)/joueurs/${joueur.id}`)}
                 style={{
-                  backgroundColor: '#ffffff',
+                  backgroundColor: colors.card,
                   borderRadius: 14,
                   padding: 12,
                   marginBottom: 6,
@@ -171,13 +172,13 @@ export default function Joueurs() {
                   </Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 13, fontWeight: '500', color: '#0f172a' }}>
+                  <Text style={{ fontSize: 13, fontWeight: '500', color: colors.text }}>
                     {joueur.prenom} {joueur.nom}
                   </Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                    <Text style={{ fontSize: 11, color: '#64748b' }}>{joueur.poste || t('playerDefaultRole')}</Text>
+                    <Text style={{ fontSize: 11, color: colors.textSecondary }}>{joueur.poste || t('playerDefaultRole')}</Text>
                     {joueur.groupes && (
-                      <Text style={{ fontSize: 11, color: '#64748b' }}>
+                      <Text style={{ fontSize: 11, color: colors.textSecondary }}>
                         · {joueur.groupes.emoji} {joueur.groupes.nom}
                       </Text>
                     )}
@@ -186,17 +187,17 @@ export default function Joueurs() {
                 <Text style={{ fontSize: 12, color: '#f59e0b' }}>
                   {'★'.repeat(Math.round(joueur.note_moyenne))}{'☆'.repeat(5 - Math.round(joueur.note_moyenne))}
                 </Text>
-                <Text style={{ fontSize: 18, color: '#94a3b8' }}>›</Text>
+                <Text style={{ fontSize: 18, color: colors.textMuted }}>›</Text>
               </TouchableOpacity>
             ))}
           </>
         ) : !loading ? (
           <View style={{ alignItems: 'center', marginTop: 60 }}>
             <Text style={{ fontSize: 40, marginBottom: 12 }}>👤</Text>
-            <Text style={{ fontSize: 16, fontWeight: '500', color: '#0f172a' }}>
+            <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text }}>
               {t('noPlayers')}
             </Text>
-            <Text style={{ fontSize: 13, color: '#64748b', marginTop: 4, textAlign: 'center' }}>
+            <Text style={{ fontSize: 13, color: colors.textSecondary, marginTop: 4, textAlign: 'center' }}>
               {t('addPlayersFromGroup')}
             </Text>
           </View>

@@ -3,11 +3,13 @@ import { View, Text, TextInput, TouchableOpacity, Alert, Platform } from 'react-
 import { useRouter } from 'expo-router'
 import { supabase } from '../../../lib/supabase'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import { useTheme } from '../../../contexts/ThemeContext'
 import { textAlign, arrow } from '../../../lib/rtl'
 
 export default function RejoindreGroupe() {
   const router = useRouter()
   const { t, isRTL } = useLanguage()
+  const { colors } = useTheme()
   const [code, setCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -51,9 +53,9 @@ export default function RejoindreGroupe() {
     }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{
-        backgroundColor: '#1e3a5f',
+        backgroundColor: colors.header,
         paddingTop: 28,
         paddingHorizontal: 20,
         paddingBottom: 14,
@@ -83,19 +85,19 @@ export default function RejoindreGroupe() {
             setError('')
           }}
           placeholder="Ex: ABCD-EFGH"
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={colors.textPlaceholder}
           autoCapitalize="characters"
           autoCorrect={false}
           maxLength={9}
           style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: colors.inputBg,
             borderRadius: 14,
             padding: 16,
             fontSize: 24,
             fontWeight: '500',
-            color: '#0f172a',
+            color: colors.text,
             borderWidth: 1,
-            borderColor: '#e2e8f0',
+            borderColor: colors.borderStrong,
             textAlign: 'center',
             letterSpacing: 6,
             marginBottom: 12,
@@ -103,7 +105,7 @@ export default function RejoindreGroupe() {
         />
 
         {error ? (
-          <Text style={{ color: '#ef4444', fontSize: 13, textAlign: 'center', marginBottom: 12 }}>
+          <Text style={{ color: colors.danger, fontSize: 13, textAlign: 'center', marginBottom: 12 }}>
             {error}
           </Text>
         ) : null}
@@ -112,13 +114,13 @@ export default function RejoindreGroupe() {
           onPress={handleRejoindre}
           disabled={loading || code.length < 4}
           style={{
-            backgroundColor: code.length >= 4 ? '#2563eb' : '#e2e8f0',
+            backgroundColor: code.length >= 4 ? '#2563eb' : colors.tag,
             borderRadius: 14,
             padding: 16,
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: code.length >= 4 ? '#fff' : '#94a3b8', fontSize: 15, fontWeight: '500' }}>
+          <Text style={{ color: code.length >= 4 ? '#fff' : colors.textMuted, fontSize: 15, fontWeight: '500' }}>
             {loading ? t('searching') : t('join')}
           </Text>
         </TouchableOpacity>

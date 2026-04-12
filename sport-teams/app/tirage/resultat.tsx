@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Share, Dimensions } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Share, Dimensions, Animated, Platform } from 'react-native'
 import AdBanner from '../../components/AdBanner'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { genererEquipes } from '../../lib/algo-equilibrage'
@@ -8,9 +8,12 @@ import { cacheInvalidate } from '../../lib/cache'
 import { useEffect, useRef, useState } from 'react'
 import { Equipe, Joueur } from '../../types'
 import { useLanguage } from '../../contexts/LanguageContext'
+import { useTheme } from '../../contexts/ThemeContext'
 
 const COULEURS_EQUIPES = ['#2563eb', '#22c55e', '#f59e0b', '#8b5cf6']
 const COULEURS_TERRAIN = ['#1d4ed8', '#16a34a', '#d97706', '#7c3aed']
+
+type SelectedPlayer = { player: Joueur; teamIndex: number }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 const TERRAIN_W = SCREEN_WIDTH - 32
@@ -96,10 +99,74 @@ function getLignes(joueurs: Joueur[], sport: string): Joueur[][] {
 
 // ─── Composant joueur sur terrain ────────────────────────────────────────────
 
+function PlayerDot({
+  joueur, couleur, isSelected, isTarget, onPress,
+}: {
+  joueur: Joueur; couleur: string; isSelected: boolean; isTarget: boolean; onPress: () => void
+}) {
+  const pulse = useRef(new Animated.Value(1)).current
+
+  useEffect(() => {
+    if (isSelected) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulse, { toValue: 1.18, duration: 500, useNativeDriver: Platform.OS !== 'web' }),
+          Animated.timing(pulse, { toValue: 1, duration: 500, useNativeDriver: Platform.OS !== 'web' }),
+        ])
+      ).start()
+    } else {
+      pulse.stopAnimation()
+      pulse.setValue(1)
+    }
+  }, [isSelected])
+
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.75} style={{ alignItems: 'center', width: 48 }}>
+      <Animated.View style={{
+        transform: [{ scale: isSelected ? pulse : 1 }],
+        alignItems: 'center',
+      }}>
+        {/* Anneau cible quand un autre joueur est sélectionné */}
+        {isTarget && (
+          <View style={{
+            position: 'absolute', width: 50, height: 50, borderRadius: 25,
+            borderWidth: 2.5, borderColor: '#fff', borderStyle: 'dashed',
+            top: -5, left: -5, zIndex: 5,
+          }} />
+        )}
+        <View style={{
+          width: 40, height: 40, borderRadius: 20,
+          backgroundColor: couleur,
+          alignItems: 'center', justifyContent: 'center',
+          borderWidth: isSelected ? 3 : 2.5,
+          borderColor: isSelected ? '#fff' : 'rgba(255,255,255,0.9)',
+          shadowColor: '#000', shadowOpacity: isSelected ? 0.6 : 0.3,
+          shadowRadius: isSelected ? 8 : 4,
+          shadowOffset: { width: 0, height: 2 }, elevation: isSelected ? 8 : 4,
+        }}>
+          <Text style={{ color: '#fff', fontSize: 11, fontWeight: '800' }}>
+            {joueur.prenom.substring(0, 2).toUpperCase()}
+          </Text>
+        </View>
+      </Animated.View>
+      <Text style={{
+        color: '#fff', fontSize: 9, marginTop: 3,
+        textAlign: 'center', fontWeight: isSelected ? '800' : '500',
+        textShadowColor: 'rgba(0,0,0,0.9)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 3,
+      }} numberOfLines={1}>
+        {joueur.prenom}
+      </Text>
+    </TouchableOpacity>
+  )
+}
+
 function TerrainEquipe({
-  equipe, couleur, top, hauteur, inverse, sport,
+  equipe, couleur, top, hauteur, inverse, sport, teamIndex, selected, onPlayerPress,
 }: {
   equipe: Equipe; couleur: string; top: number; hauteur: number; inverse: boolean; sport: string
+  teamIndex: number; selected: SelectedPlayer | null; onPlayerPress: (player: Joueur, teamIndex: number) => void
 }) {
   const lignes = getLignes(equipe.joueurs, sport)
   const lignesAffichees = inverse ? [...lignes].reverse() : lignes
@@ -129,31 +196,20 @@ function TerrainEquipe({
           alignItems: 'center',
           paddingHorizontal: 12,
         }}>
-          {ligne.map(j => (
-            <View key={j.id} style={{ alignItems: 'center', width: 48 }}>
-              <View style={{
-                width: 40, height: 40, borderRadius: 20,
-                backgroundColor: couleur,
-                alignItems: 'center', justifyContent: 'center',
-                borderWidth: 2.5, borderColor: 'rgba(255,255,255,0.9)',
-                shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 4,
-                shadowOffset: { width: 0, height: 2 }, elevation: 4,
-              }}>
-                <Text style={{ color: '#fff', fontSize: 11, fontWeight: '800' }}>
-                  {j.prenom.substring(0, 2).toUpperCase()}
-                </Text>
-              </View>
-              <Text style={{
-                color: '#fff', fontSize: 9, marginTop: 3,
-                textAlign: 'center', fontWeight: '500',
-                textShadowColor: 'rgba(0,0,0,0.9)',
-                textShadowOffset: { width: 0, height: 1 },
-                textShadowRadius: 3,
-              }} numberOfLines={1}>
-                {j.prenom}
-              </Text>
-            </View>
-          ))}
+          {ligne.map(j => {
+            const isSelected = selected?.player.id === j.id && selected.teamIndex === teamIndex
+            const isTarget = !!selected && selected.player.id !== j.id
+            return (
+              <PlayerDot
+                key={j.id}
+                joueur={j}
+                couleur={couleur}
+                isSelected={isSelected}
+                isTarget={isTarget}
+                onPress={() => onPlayerPress(j, teamIndex)}
+              />
+            )
+          })}
         </View>
       ))}
     </View>
@@ -162,7 +218,7 @@ function TerrainEquipe({
 
 // ─── Terrains ─────────────────────────────────────────────────────────────────
 
-function TerrainFootball({ equipes }: { equipes: Equipe[] }) {
+function TerrainFootball({ equipes, selected, onPlayerPress }: { equipes: Equipe[]; selected: SelectedPlayer | null; onPlayerPress: (player: Joueur, teamIndex: number) => void }) {
   const LINE = 'rgba(255,255,255,0.45)'
   const cx = TERRAIN_W / 2
   const cy = TERRAIN_H / 2
@@ -198,13 +254,14 @@ function TerrainFootball({ equipes }: { equipes: Equipe[] }) {
       <View style={{ position: 'absolute', bottom: 6, left: cx - 20, width: 40, height: 10, borderWidth: 2, borderColor: 'rgba(255,255,255,0.7)', borderBottomWidth: 0, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.08)' }} />
       {equipes.map((eq, i) => (
         <TerrainEquipe key={eq.nom} equipe={eq} couleur={COULEURS_TERRAIN[i % COULEURS_TERRAIN.length]}
-          top={i * moitieH} hauteur={moitieH} inverse={i % 2 === 1} sport="Football" />
+          top={i * moitieH} hauteur={moitieH} inverse={i % 2 === 1} sport="Football"
+          teamIndex={i} selected={selected} onPlayerPress={onPlayerPress} />
       ))}
     </View>
   )
 }
 
-function TerrainBasketball({ equipes }: { equipes: Equipe[] }) {
+function TerrainBasketball({ equipes, selected, onPlayerPress }: { equipes: Equipe[]; selected: SelectedPlayer | null; onPlayerPress: (player: Joueur, teamIndex: number) => void }) {
   const LINE = 'rgba(255,255,255,0.5)'
   const cx = TERRAIN_W / 2
   const cy = TERRAIN_H / 2
@@ -255,13 +312,14 @@ function TerrainBasketball({ equipes }: { equipes: Equipe[] }) {
 
       {equipes.map((eq, i) => (
         <TerrainEquipe key={eq.nom} equipe={eq} couleur={COULEURS_TERRAIN[i % COULEURS_TERRAIN.length]}
-          top={i * moitieH} hauteur={moitieH} inverse={i % 2 === 1} sport="Basketball" />
+          top={i * moitieH} hauteur={moitieH} inverse={i % 2 === 1} sport="Basketball"
+          teamIndex={i} selected={selected} onPlayerPress={onPlayerPress} />
       ))}
     </View>
   )
 }
 
-function TerrainVolleyball({ equipes }: { equipes: Equipe[] }) {
+function TerrainVolleyball({ equipes, selected, onPlayerPress }: { equipes: Equipe[]; selected: SelectedPlayer | null; onPlayerPress: (player: Joueur, teamIndex: number) => void }) {
   const LINE = 'rgba(255,255,255,0.55)'
   const cx = TERRAIN_W / 2
   const cy = TERRAIN_H / 2
@@ -300,13 +358,14 @@ function TerrainVolleyball({ equipes }: { equipes: Equipe[] }) {
 
       {equipes.map((eq, i) => (
         <TerrainEquipe key={eq.nom} equipe={eq} couleur={COULEURS_TERRAIN[i % COULEURS_TERRAIN.length]}
-          top={i * moitieH} hauteur={moitieH} inverse={i % 2 === 1} sport="Volleyball" />
+          top={i * moitieH} hauteur={moitieH} inverse={i % 2 === 1} sport="Volleyball"
+          teamIndex={i} selected={selected} onPlayerPress={onPlayerPress} />
       ))}
     </View>
   )
 }
 
-function TerrainTennis({ equipes }: { equipes: Equipe[] }) {
+function TerrainTennis({ equipes, selected, onPlayerPress }: { equipes: Equipe[]; selected: SelectedPlayer | null; onPlayerPress: (player: Joueur, teamIndex: number) => void }) {
   const LINE = 'rgba(255,255,255,0.6)'
   const cx = TERRAIN_W / 2
   const cy = TERRAIN_H / 2
@@ -343,13 +402,14 @@ function TerrainTennis({ equipes }: { equipes: Equipe[] }) {
 
       {equipes.map((eq, i) => (
         <TerrainEquipe key={eq.nom} equipe={eq} couleur={COULEURS_TERRAIN[i % COULEURS_TERRAIN.length]}
-          top={i * moitieH} hauteur={moitieH} inverse={i % 2 === 1} sport="Tennis" />
+          top={i * moitieH} hauteur={moitieH} inverse={i % 2 === 1} sport="Tennis"
+          teamIndex={i} selected={selected} onPlayerPress={onPlayerPress} />
       ))}
     </View>
   )
 }
 
-function TerrainRugby({ equipes }: { equipes: Equipe[] }) {
+function TerrainRugby({ equipes, selected, onPlayerPress }: { equipes: Equipe[]; selected: SelectedPlayer | null; onPlayerPress: (player: Joueur, teamIndex: number) => void }) {
   const LINE = 'rgba(255,255,255,0.45)'
   const cx = TERRAIN_W / 2
   const cy = TERRAIN_H / 2
@@ -395,13 +455,14 @@ function TerrainRugby({ equipes }: { equipes: Equipe[] }) {
 
       {equipes.map((eq, i) => (
         <TerrainEquipe key={eq.nom} equipe={eq} couleur={COULEURS_TERRAIN[i % COULEURS_TERRAIN.length]}
-          top={i * moitieH} hauteur={moitieH} inverse={i % 2 === 1} sport="Rugby" />
+          top={i * moitieH} hauteur={moitieH} inverse={i % 2 === 1} sport="Rugby"
+          teamIndex={i} selected={selected} onPlayerPress={onPlayerPress} />
       ))}
     </View>
   )
 }
 
-function TerrainAutre({ equipes }: { equipes: Equipe[] }) {
+function TerrainAutre({ equipes, selected, onPlayerPress }: { equipes: Equipe[]; selected: SelectedPlayer | null; onPlayerPress: (player: Joueur, teamIndex: number) => void }) {
   const LINE = 'rgba(255,255,255,0.4)'
   const cx = TERRAIN_W / 2
   const cy = TERRAIN_H / 2
@@ -415,7 +476,8 @@ function TerrainAutre({ equipes }: { equipes: Equipe[] }) {
       <View style={{ position: 'absolute', top: cy - 44, left: cx - 44, width: 88, height: 88, borderRadius: 44, borderWidth: 2, borderColor: LINE }} />
       {equipes.map((eq, i) => (
         <TerrainEquipe key={eq.nom} equipe={eq} couleur={COULEURS_TERRAIN[i % COULEURS_TERRAIN.length]}
-          top={i * moitieH} hauteur={moitieH} inverse={i % 2 === 1} sport="Autre" />
+          top={i * moitieH} hauteur={moitieH} inverse={i % 2 === 1} sport="Autre"
+          teamIndex={i} selected={selected} onPlayerPress={onPlayerPress} />
       ))}
     </View>
   )
@@ -436,6 +498,7 @@ export default function Resultat() {
   const router = useRouter()
   const { equipes: equipesParam, equilibrePct, groupeId } = useLocalSearchParams()
   const { t } = useLanguage()
+  const { colors } = useTheme()
 
   const [equipes, setEquipes] = useState<Equipe[]>(() => {
     try { return JSON.parse(equipesParam as string) ?? [] }
@@ -444,7 +507,34 @@ export default function Resultat() {
   const [equilibre, setEquilibre] = useState(Number(equilibrePct))
   const [vue, setVue] = useState<'liste' | 'terrain'>('liste')
   const [sport, setSport] = useState('Football')
+  const [selected, setSelected] = useState<SelectedPlayer | null>(null)
   const savedRef = useRef(false)
+
+  function swapPlayers(a: SelectedPlayer, b: { player: Joueur; teamIndex: number }) {
+    setEquipes(prev => {
+      const next = prev.map(e => ({ ...e, joueurs: [...e.joueurs] }))
+      const teamA = next[a.teamIndex]
+      const teamB = next[b.teamIndex]
+      const idxA = teamA.joueurs.findIndex(j => j.id === a.player.id)
+      const idxB = teamB.joueurs.findIndex(j => j.id === b.player.id)
+      if (idxA === -1 || idxB === -1) return prev
+      const temp = teamA.joueurs[idxA]
+      teamA.joueurs[idxA] = teamB.joueurs[idxB]
+      teamB.joueurs[idxB] = temp
+      return next
+    })
+    setSelected(null)
+  }
+
+  function handlePlayerPress(player: Joueur, teamIndex: number) {
+    if (!selected) {
+      setSelected({ player, teamIndex })
+    } else if (selected.player.id === player.id && selected.teamIndex === teamIndex) {
+      setSelected(null)
+    } else {
+      swapPlayers(selected, { player, teamIndex })
+    }
+  }
 
   useEffect(() => {
     if (!savedRef.current) {
@@ -508,20 +598,21 @@ export default function Resultat() {
   }
 
   function renderTerrain() {
+    const terrainProps = { equipes, selected, onPlayerPress: handlePlayerPress }
     switch (sport) {
-      case 'Basketball': return <TerrainBasketball equipes={equipes} />
-      case 'Volleyball':  return <TerrainVolleyball equipes={equipes} />
-      case 'Tennis':      return <TerrainTennis equipes={equipes} />
-      case 'Rugby':       return <TerrainRugby equipes={equipes} />
-      case 'Autre':       return <TerrainAutre equipes={equipes} />
-      default:            return <TerrainFootball equipes={equipes} />
+      case 'Basketball': return <TerrainBasketball {...terrainProps} />
+      case 'Volleyball':  return <TerrainVolleyball {...terrainProps} />
+      case 'Tennis':      return <TerrainTennis {...terrainProps} />
+      case 'Rugby':       return <TerrainRugby {...terrainProps} />
+      case 'Autre':       return <TerrainAutre {...terrainProps} />
+      default:            return <TerrainFootball {...terrainProps} />
     }
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{
-        backgroundColor: '#1e3a5f',
+        backgroundColor: colors.header,
         paddingTop: 28,
         paddingHorizontal: 20,
         paddingBottom: 14,
@@ -549,7 +640,7 @@ export default function Resultat() {
                 backgroundColor: vue === 'liste' ? '#fff' : 'transparent',
               }}
             >
-              <Text style={{ fontSize: 12, fontWeight: '600', color: vue === 'liste' ? '#0f172a' : 'rgba(255,255,255,0.7)' }}>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: vue === 'liste' ? colors.text : 'rgba(255,255,255,0.7)' }}>
                 {t('listView')}
               </Text>
             </TouchableOpacity>
@@ -560,7 +651,7 @@ export default function Resultat() {
                 backgroundColor: vue === 'terrain' ? '#fff' : 'transparent',
               }}
             >
-              <Text style={{ fontSize: 12, fontWeight: '600', color: vue === 'terrain' ? '#0f172a' : 'rgba(255,255,255,0.7)' }}>
+              <Text style={{ fontSize: 12, fontWeight: '600', color: vue === 'terrain' ? colors.text : 'rgba(255,255,255,0.7)' }}>
                 {TERRAIN_EMOJI[sport] ?? '🏟️'} {t('pitchView')}
               </Text>
             </TouchableOpacity>
@@ -589,44 +680,87 @@ export default function Resultat() {
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         {vue === 'liste' ? (
-          equipes.map((eq, i) => (
-            <View key={i} style={{
-              backgroundColor: '#ffffff', borderRadius: 16, marginBottom: 10,
-              overflow: 'hidden',
-              shadowColor: '#0f172a', shadowOpacity: 0.06, shadowRadius: 8,
-              shadowOffset: { width: 0, height: 2 }, elevation: 2,
-            }}>
+          <>
+            {selected && (
               <View style={{
-                backgroundColor: `${COULEURS_EQUIPES[i]}15`, padding: 10,
-                flexDirection: 'row', alignItems: 'center',
+                backgroundColor: '#eff6ff', borderRadius: 12, padding: 10,
+                marginBottom: 10, flexDirection: 'row', alignItems: 'center', gap: 8,
+                borderWidth: 1, borderColor: '#bfdbfe',
               }}>
-                <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: COULEURS_EQUIPES[i] }}>{eq.nom}</Text>
-                <Text style={{ fontSize: 11, color: '#64748b' }}>{eq.totalPoints.toFixed(1)} pts</Text>
+                <Text style={{ fontSize: 14 }}>🔄</Text>
+                <Text style={{ flex: 1, fontSize: 12, color: '#2563eb', fontWeight: '500' }}>
+                  {selected.player.prenom} — {t('swapHint')}
+                </Text>
+                <TouchableOpacity onPress={() => setSelected(null)}>
+                  <Text style={{ fontSize: 18, color: '#94a3b8' }}>✕</Text>
+                </TouchableOpacity>
               </View>
-              <View style={{ padding: 10 }}>
-                {eq.joueurs.map(j => (
-                  <View key={j.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 4 }}>
-                    <View style={{
-                      width: 24, height: 24, borderRadius: 12,
-                      backgroundColor: j.couleur_avatar,
-                      alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      <Text style={{ fontSize: 9, fontWeight: '500', color: '#2563eb' }}>{j.prenom.substring(0, 2).toUpperCase()}</Text>
-                    </View>
-                    <Text style={{ flex: 1, fontSize: 12, color: '#0f172a' }}>{j.prenom} {j.nom}</Text>
-                    <Text style={{
-                      fontSize: 10, fontWeight: '500', color: '#64748b',
-                      backgroundColor: '#f1f5f9', paddingHorizontal: 6, paddingVertical: 2,
-                      borderRadius: 8, textAlign: 'center',
-                    }}>
-                      {j.poste || 'N/A'}
-                    </Text>
-                    <Text style={{ fontSize: 11, color: '#f59e0b' }}>{'★'.repeat(Math.round(j.note_moyenne))}</Text>
-                  </View>
-                ))}
+            )}
+            {equipes.map((eq, i) => (
+              <View key={i} style={{
+                backgroundColor: colors.card, borderRadius: 16, marginBottom: 10,
+                overflow: 'hidden',
+                shadowColor: '#0f172a', shadowOpacity: 0.06, shadowRadius: 8,
+                shadowOffset: { width: 0, height: 2 }, elevation: 2,
+              }}>
+                <View style={{
+                  backgroundColor: `${COULEURS_EQUIPES[i]}15`, padding: 10,
+                  flexDirection: 'row', alignItems: 'center',
+                }}>
+                  <Text style={{ flex: 1, fontSize: 13, fontWeight: '500', color: COULEURS_EQUIPES[i] }}>{eq.nom}</Text>
+                  <Text style={{ fontSize: 11, color: colors.textSecondary }}>{eq.totalPoints.toFixed(1)} pts</Text>
+                </View>
+                <View style={{ padding: 10 }}>
+                  {eq.joueurs.map(j => {
+                    const isSelected = selected?.player.id === j.id && selected.teamIndex === i
+                    const isTarget = !!selected && selected.player.id !== j.id
+                    return (
+                      <TouchableOpacity
+                        key={j.id}
+                        onPress={() => handlePlayerPress(j, i)}
+                        activeOpacity={0.7}
+                        style={{
+                          flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6,
+                          paddingHorizontal: 6, borderRadius: 10, marginBottom: 2,
+                          backgroundColor: isSelected
+                            ? `${COULEURS_EQUIPES[i]}20`
+                            : isTarget
+                              ? 'rgba(37,99,235,0.06)'
+                              : 'transparent',
+                          borderWidth: isSelected || isTarget ? 1 : 0,
+                          borderColor: isSelected ? COULEURS_EQUIPES[i] : isTarget ? '#bfdbfe' : 'transparent',
+                          borderStyle: isTarget && !isSelected ? 'dashed' : 'solid',
+                        }}
+                      >
+                        <View style={{
+                          width: 28, height: 28, borderRadius: 14,
+                          backgroundColor: j.couleur_avatar,
+                          alignItems: 'center', justifyContent: 'center',
+                          borderWidth: isSelected ? 2 : 0,
+                          borderColor: COULEURS_EQUIPES[i],
+                        }}>
+                          <Text style={{ fontSize: 9, fontWeight: '700', color: '#2563eb' }}>{j.prenom.substring(0, 2).toUpperCase()}</Text>
+                        </View>
+                        <Text style={{ flex: 1, fontSize: 12, color: colors.text, fontWeight: isSelected ? '700' : '400' }}>
+                          {j.prenom} {j.nom}
+                        </Text>
+                        <Text style={{
+                          fontSize: 10, fontWeight: '500', color: colors.textSecondary,
+                          backgroundColor: colors.tag, paddingHorizontal: 6, paddingVertical: 2,
+                          borderRadius: 8, textAlign: 'center',
+                        }}>
+                          {j.poste || 'N/A'}
+                        </Text>
+                        <Text style={{ fontSize: 11, color: '#f59e0b' }}>{'★'.repeat(Math.round(j.note_moyenne))}</Text>
+                        {isSelected && <Text style={{ fontSize: 14 }}>✋</Text>}
+                        {isTarget && <Text style={{ fontSize: 14 }}>🔄</Text>}
+                      </TouchableOpacity>
+                    )
+                  })}
+                </View>
               </View>
-            </View>
-          ))
+            ))}
+          </>
         ) : (
           renderTerrain()
         )}
@@ -634,9 +768,9 @@ export default function Resultat() {
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
           <TouchableOpacity
             onPress={handleRelancer}
-            style={{ flex: 1, backgroundColor: '#f1f5f9', borderRadius: 14, padding: 14, alignItems: 'center' }}
+            style={{ flex: 1, backgroundColor: colors.tag, borderRadius: 14, padding: 14, alignItems: 'center' }}
           >
-            <Text style={{ color: '#0f172a', fontSize: 14, fontWeight: '500' }}>{t('reroll')}</Text>
+            <Text style={{ color: colors.text, fontSize: 14, fontWeight: '500' }}>{t('reroll')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handlePartager}
@@ -646,7 +780,7 @@ export default function Resultat() {
           </TouchableOpacity>
         </View>
 
-        <AdBanner backgroundColor="#f8fafc" />
+        <AdBanner backgroundColor={colors.background} />
 
       </ScrollView>
     </View>

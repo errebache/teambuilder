@@ -44,6 +44,7 @@ function SelectRow<T extends string>({
   isRTL: boolean
 }) {
   const [open, setOpen] = useState(false)
+  const { colors } = useTheme()
   const current = options.find(o => o.value === value)
 
   return (
@@ -61,33 +62,55 @@ function SelectRow<T extends string>({
         }}>
           {icon}
         </View>
-        <Text style={{ flex: 1, fontSize: 14, color: '#0f172a', fontWeight: '500', textAlign: textAlign(isRTL) }}>
+        <Text style={{ flex: 1, fontSize: 14, color: colors.text, fontWeight: '500', textAlign: textAlign(isRTL) }}>
           {label}
         </Text>
         <View style={{
           flexDirection: row(isRTL), alignItems: 'center', gap: 4,
-          backgroundColor: '#f1f5f9', borderRadius: 10,
+          backgroundColor: colors.tag, borderRadius: 10,
           paddingHorizontal: 10, paddingVertical: 5,
         }}>
           {current?.left ? <Text style={{ fontSize: 13 }}>{current.left}</Text> : null}
-          <Text style={{ fontSize: 13, color: '#0f172a', fontWeight: '500' }}>
+          <Text style={{ fontSize: 13, color: colors.text, fontWeight: '500' }}>
             {current?.label ?? '—'}
           </Text>
-          <ChevronDown size={12} color="#64748b" />
+          <ChevronDown size={12} color={colors.textMuted} />
         </View>
       </TouchableOpacity>
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <Pressable style={s.overlay} onPress={() => setOpen(false)}>
-          <Pressable style={s.sheet} onPress={e => e.stopPropagation()}>
-            <Text style={[s.sheetTitle, { textAlign: textAlign(isRTL) }]}>{label}</Text>
+        <Pressable style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 32,
+        }} onPress={() => setOpen(false)}>
+          <Pressable style={{
+            backgroundColor: colors.card,
+            borderRadius: 20,
+            width: '100%',
+            overflow: 'hidden',
+            shadowColor: '#000',
+            shadowOpacity: 0.2,
+            shadowRadius: 20,
+            shadowOffset: { width: 0, height: 8 },
+            elevation: 10,
+          }} onPress={e => e.stopPropagation()}>
+            <Text style={{
+              fontSize: 13, fontWeight: '600', color: colors.sectionLabel,
+              textTransform: 'uppercase', letterSpacing: 0.8,
+              paddingHorizontal: 16, paddingTop: 16, paddingBottom: 10,
+              borderBottomWidth: 1, borderBottomColor: colors.borderStrong,
+              textAlign: textAlign(isRTL),
+            }}>{label}</Text>
             {options.map((opt, i) => (
               <TouchableOpacity
                 key={opt.value}
                 onPress={() => { onChange(opt.value); setOpen(false) }}
                 style={[
                   { flexDirection: row(isRTL), alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14 },
-                  i < options.length - 1 && s.sheetRowBorder,
+                  i < options.length - 1 ? { borderBottomWidth: 1, borderBottomColor: colors.borderStrong } : {},
                 ]}
                 activeOpacity={0.7}
               >
@@ -95,8 +118,8 @@ function SelectRow<T extends string>({
                   <Text style={{ fontSize: 18, marginEnd: 10 }}>{opt.left}</Text>
                 ) : null}
                 <Text style={[
-                  { flex: 1, fontSize: 15, color: '#0f172a', fontWeight: '400', textAlign: textAlign(isRTL) },
-                  opt.value === value && { color: '#2563eb', fontWeight: '600' },
+                  { flex: 1, fontSize: 15, color: colors.text, fontWeight: '400', textAlign: textAlign(isRTL) },
+                  opt.value === value ? { color: '#2563eb', fontWeight: '600' } : {},
                 ]}>
                   {opt.label}
                 </Text>
@@ -113,7 +136,7 @@ function SelectRow<T extends string>({
 export default function Parametres() {
   const router = useRouter()
   const { lang, setLang, t, isRTL } = useLanguage()
-  const { mode, setMode } = useTheme()
+  const { mode, setMode, colors } = useTheme()
   const [notifications, setNotifications] = useState(true)
 
   const langOptions: SelectOption<LangCode>[] = LANGUES.map(l => ({
@@ -152,12 +175,26 @@ export default function Parametres() {
     }
   }
 
+  const sectionLabelStyle = {
+    fontSize: 11, fontWeight: '700' as const, color: colors.sectionLabel,
+    textTransform: 'uppercase' as const, letterSpacing: 1,
+    marginBottom: 10, marginTop: 20,
+  }
+
+  const cardStyle = {
+    backgroundColor: colors.card, borderRadius: 16,
+    overflow: 'hidden' as const, marginBottom: 16,
+    shadowColor: '#0f172a', shadowOpacity: 0.06,
+    shadowRadius: 8, shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  }
+
   return (
-    <View style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
 
       {/* Header */}
       <View style={{
-        backgroundColor: '#1e3a5f',
+        backgroundColor: colors.header,
         paddingTop: 28,
         paddingHorizontal: 20,
         paddingBottom: 14,
@@ -173,45 +210,45 @@ export default function Parametres() {
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 48 }}>
 
         {/* ── Préférences ── */}
-        <Text style={[s.sectionLabel, { textAlign: textAlign(isRTL), marginStart: 4, marginEnd: 0 }]}>
+        <Text style={[sectionLabelStyle, { textAlign: textAlign(isRTL), marginStart: 4, marginEnd: 0 }]}>
           {t('preferences')}
         </Text>
-        <View style={s.card}>
+        <View style={cardStyle}>
 
           {/* Notifications row */}
           <View style={{ flexDirection: row(isRTL), alignItems: 'center', paddingHorizontal: 16, paddingVertical: 13 }}>
             <View style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: '#eff6ff', alignItems: 'center', justifyContent: 'center', marginEnd: 12 }}>
               <Bell size={16} color="#2563eb" />
             </View>
-            <Text style={{ flex: 1, fontSize: 14, color: '#0f172a', fontWeight: '500', textAlign: textAlign(isRTL) }}>
+            <Text style={{ flex: 1, fontSize: 14, color: colors.text, fontWeight: '500', textAlign: textAlign(isRTL) }}>
               {t('notifications')}
             </Text>
             <Switch
               value={notifications}
               onValueChange={setNotifications}
-              trackColor={{ true: '#2563eb', false: '#e2e8f0' }}
+              trackColor={{ true: '#2563eb', false: colors.switchTrackFalse }}
               thumbColor="#fff"
             />
           </View>
 
-          <View style={{ height: 1, backgroundColor: '#e2e8f0', marginStart: 60 }} />
+          <View style={{ height: 1, backgroundColor: colors.borderStrong, marginStart: 60 }} />
 
           <SelectRow
             label={t('language')}
             icon={<Text style={{ fontSize: 15 }}>🌐</Text>}
-            iconBg="#f1f5f9"
+            iconBg={colors.tag}
             options={langOptions}
             value={lang}
             onChange={setLang}
             isRTL={isRTL}
           />
 
-          <View style={{ height: 1, backgroundColor: '#e2e8f0', marginStart: 60 }} />
+          <View style={{ height: 1, backgroundColor: colors.borderStrong, marginStart: 60 }} />
 
           <SelectRow
             label={t('appearance')}
             icon={<Text style={{ fontSize: 15 }}>🎨</Text>}
-            iconBg="#f1f5f9"
+            iconBg={colors.tag}
             options={themeOptions}
             value={mode}
             onChange={setMode}
@@ -220,10 +257,10 @@ export default function Parametres() {
         </View>
 
         {/* ── Zone danger ── */}
-        <Text style={[s.sectionLabel, { color: '#ef4444', textAlign: textAlign(isRTL), marginStart: 4, marginEnd: 0 }]}>
+        <Text style={[sectionLabelStyle, { color: colors.danger, textAlign: textAlign(isRTL), marginStart: 4, marginEnd: 0 }]}>
           {t('danger')}
         </Text>
-        <View style={s.card}>
+        <View style={cardStyle}>
           <TouchableOpacity
             onPress={handleResetData}
             style={{ flexDirection: row(isRTL), alignItems: 'center', paddingHorizontal: 16, paddingVertical: 13, gap: 16 }}
@@ -232,10 +269,10 @@ export default function Parametres() {
               <Trash2 size={16} color="#ef4444" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 14, color: '#ef4444', fontWeight: '600', textAlign: textAlign(isRTL) }}>
+              <Text style={{ fontSize: 14, color: colors.danger, fontWeight: '600', textAlign: textAlign(isRTL) }}>
                 {t('resetApp')}
               </Text>
-              <Text style={{ fontSize: 11, color: '#94a3b8', marginTop: 2, textAlign: textAlign(isRTL) }}>
+              <Text style={{ fontSize: 11, color: colors.textMuted, marginTop: 2, textAlign: textAlign(isRTL) }}>
                 {t('resetDesc')}
               </Text>
             </View>
@@ -245,46 +282,4 @@ export default function Parametres() {
       </ScrollView>
     </View>
   )
-}
-
-const s = {
-  sectionLabel: {
-    fontSize: 11, fontWeight: '700' as const, color: '#94a3b8',
-    textTransform: 'uppercase' as const, letterSpacing: 1,
-    marginBottom: 10, marginTop: 20,
-  },
-  card: {
-    backgroundColor: '#ffffff', borderRadius: 16,
-    overflow: 'hidden' as const, marginBottom: 16,
-    shadowColor: '#0f172a', shadowOpacity: 0.06,
-    shadowRadius: 8, shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-    padding: 32,
-  },
-  sheet: {
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-    width: '100%' as const,
-    overflow: 'hidden' as const,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 10,
-  },
-  sheetTitle: {
-    fontSize: 13, fontWeight: '600' as const, color: '#94a3b8',
-    textTransform: 'uppercase' as const, letterSpacing: 0.8,
-    paddingHorizontal: 16, paddingTop: 16, paddingBottom: 10,
-    borderBottomWidth: 1, borderBottomColor: '#e2e8f0',
-  },
-  sheetRowBorder: {
-    borderBottomWidth: 1, borderBottomColor: '#e2e8f0',
-  },
 }

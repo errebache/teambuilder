@@ -7,15 +7,16 @@ import { supabase } from '../../../lib/supabase'
 import { cacheGet, cacheInvalidate } from '../../../lib/cache'
 import { Groupe } from '../../../types'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import { useTheme } from '../../../contexts/ThemeContext'
 
 export default function DetailGroupe() {
   const { t } = useLanguage()
+  const { colors } = useTheme()
   const router = useRouter()
   const { id, nouveauMembre } = useLocalSearchParams()
 
   const { joueurs, hasFetched, fetchJoueurs } = useJoueurs(id as string)
   const [groupe, setGroupe] = useState<Groupe | null>(() => {
-    // Récupère instantanément depuis le cache de la liste des groupes
     const list = cacheGet<Groupe[]>('groupes')
     return list?.find(g => g.id === id) ?? null
   })
@@ -27,7 +28,6 @@ export default function DetailGroupe() {
     }, [id])
   )
 
-  // Attendre que le fetch soit terminé avant de montrer le dialog
   useEffect(() => {
     if (nouveauMembre !== 'true') return
     if (!hasFetched) return
@@ -103,9 +103,9 @@ export default function DetailGroupe() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f8fafc', paddingBottom: 80 }}>
+    <View style={{ flex: 1, backgroundColor: colors.background, paddingBottom: 80 }}>
       <View style={{
-        backgroundColor: '#1e3a5f',
+        backgroundColor: colors.header,
         paddingTop: 28,
         paddingHorizontal: 20,
         paddingBottom: 14,
@@ -177,7 +177,7 @@ export default function DetailGroupe() {
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
         <Text style={{
-          fontSize: 11, fontWeight: '700', color: '#94a3b8',
+          fontSize: 11, fontWeight: '700', color: colors.sectionLabel,
           textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 20,
         }}>
           {t('players')}
@@ -189,7 +189,7 @@ export default function DetailGroupe() {
               key={joueur.id}
               onPress={() => router.push(`/(tabs)/joueurs/${joueur.id}?from=groupe&groupeId=${id}`)}
               style={{
-                backgroundColor: '#ffffff',
+                backgroundColor: colors.card,
                 borderRadius: 14,
                 padding: 12,
                 marginBottom: 6,
@@ -215,10 +215,10 @@ export default function DetailGroupe() {
                 </Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 13, fontWeight: '500', color: '#0f172a' }}>
+                <Text style={{ fontSize: 13, fontWeight: '500', color: colors.text }}>
                   {joueur.prenom} {joueur.nom}
                 </Text>
-                <Text style={{ fontSize: 11, color: '#64748b', marginTop: 1 }}>
+                <Text style={{ fontSize: 11, color: colors.textSecondary, marginTop: 1 }}>
                   {joueur.poste || t('playerDefaultRole')}
                 </Text>
               </View>
@@ -229,7 +229,7 @@ export default function DetailGroupe() {
           ))
         ) : hasFetched ? (
           <View style={{ alignItems: 'center', marginTop: 40, marginBottom: 20 }}>
-            <Text style={{ fontSize: 13, color: '#64748b' }}>
+            <Text style={{ fontSize: 13, color: colors.textSecondary }}>
               {t('noPlayersYet')}
             </Text>
           </View>
@@ -241,8 +241,8 @@ export default function DetailGroupe() {
       <View style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
         flexDirection: 'row', gap: 10,
-        padding: 16, backgroundColor: '#f8fafc',
-        borderTopWidth: 1, borderTopColor: '#e2e8f0',
+        padding: 16, backgroundColor: colors.background,
+        borderTopWidth: 1, borderTopColor: colors.borderStrong,
       }}>
         <TouchableOpacity
           onPress={() => router.push(`/(tabs)/joueurs/new?groupeId=${id}`)}
@@ -260,13 +260,13 @@ export default function DetailGroupe() {
           onPress={() => router.push(`/tirage/selection?groupeId=${id}`)}
           disabled={joueurs.length < 4}
           style={{
-            flex: 1, backgroundColor: joueurs.length >= 4 ? '#22c55e' : '#e2e8f0',
+            flex: 1, backgroundColor: joueurs.length >= 4 ? '#22c55e' : colors.tag,
             borderRadius: 14, paddingVertical: 14,
             flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
           }}
         >
-          <Play size={15} color={joueurs.length >= 4 ? '#fff' : '#94a3b8'} />
-          <Text style={{ color: joueurs.length >= 4 ? '#fff' : '#94a3b8', fontSize: 13, fontWeight: '500' }}>
+          <Play size={15} color={joueurs.length >= 4 ? '#fff' : colors.textMuted} />
+          <Text style={{ color: joueurs.length >= 4 ? '#fff' : colors.textMuted, fontSize: 13, fontWeight: '500' }}>
             {joueurs.length < 4 ? `${4 - joueurs.length} ${t('generateTeamsMin')}` : t('generateTeams')}
           </Text>
         </TouchableOpacity>

@@ -52,6 +52,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     share: 'Partager',
     listView: 'Liste',
     pitchView: 'Terrain',
+    swapHint: 'sélectionné — tape un autre joueur pour échanger',
     // Groups page
     hello: 'Bonjour 👋',
     activeGroups: 'groupes actifs',
@@ -269,6 +270,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     share: 'Share',
     listView: 'List',
     pitchView: 'Pitch',
+    swapHint: 'selected — tap another player to swap',
     // Groups page
     hello: 'Hello 👋',
     activeGroups: 'active groups',
@@ -486,6 +488,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     share: 'مشاركة',
     listView: 'قائمة',
     pitchView: 'الملعب',
+    swapHint: 'محدد — اضغط على لاعب آخر للتبديل',
     // Groups page
     hello: 'مرحبا 👋',
     activeGroups: 'مجموعات نشطة',
@@ -703,6 +706,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     share: 'Compartir',
     listView: 'Lista',
     pitchView: 'Campo',
+    swapHint: 'seleccionado — toca otro jugador para intercambiar',
     // Groups page
     hello: 'Hola 👋',
     activeGroups: 'grupos activos',
@@ -920,6 +924,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     share: 'Teilen',
     listView: 'Liste',
     pitchView: 'Spielfeld',
+    swapHint: 'ausgewählt — tippe einen anderen Spieler zum Tauschen',
     // Groups page
     hello: 'Hallo 👋',
     activeGroups: 'aktive Gruppen',
@@ -1137,6 +1142,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     share: 'Compartilhar',
     listView: 'Lista',
     pitchView: 'Campo',
+    swapHint: 'selecionado — toque em outro jogador para trocar',
     // Groups page
     hello: 'Olá 👋',
     activeGroups: 'grupos ativos',
@@ -1337,15 +1343,19 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       const saved = Platform.OS === 'web'
         ? localStorage.getItem('app_langue')
         : await AsyncStorage.getItem('app_langue')
-      if (saved && saved in translations) {
-        const savedLang = saved as LangCode
-        setLangState(savedLang)
-        if (Platform.OS !== 'web') {
-          const shouldBeRTL = savedLang === 'ar'
-          if (I18nManager.isRTL !== shouldBeRTL) {
-            I18nManager.forceRTL(shouldBeRTL)
-          }
-        }
+
+      // Langue résolue : sauvegardée si valide, sinon 'fr' par défaut
+      const resolvedLang: LangCode =
+        saved && saved in translations ? (saved as LangCode) : 'fr'
+
+      setLangState(resolvedLang)
+
+      // TOUJOURS enforcer le bon sens natif au démarrage.
+      // Sans ça, un ancien forceRTL(true) survit au reset de l'app
+      // et l'app reste en RTL même si la langue est française.
+      if (Platform.OS !== 'web') {
+        const shouldBeRTL = resolvedLang === 'ar'
+        I18nManager.forceRTL(shouldBeRTL)
       }
     }
     load()
@@ -1358,9 +1368,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     } else {
       await AsyncStorage.setItem('app_langue', newLang)
       const shouldBeRTL = newLang === 'ar'
-      if (I18nManager.isRTL !== shouldBeRTL) {
-        I18nManager.forceRTL(shouldBeRTL)
-      }
+      I18nManager.forceRTL(shouldBeRTL)
     }
   }
 

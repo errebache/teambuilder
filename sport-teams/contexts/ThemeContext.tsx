@@ -7,7 +7,7 @@ export type ThemeMode = 'light' | 'dark' | 'system'
 export const LIGHT_COLORS = {
   background: '#F5F5F7',
   card: '#ffffff',
-  header: '#0f172a',
+  header: '#1e3a5f',
   headerText: '#fff',
   text: '#0f172a',
   textSecondary: '#555',

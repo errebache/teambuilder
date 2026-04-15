@@ -5,7 +5,8 @@ import { genererEquipes } from '../../lib/algo-equilibrage'
 import { supabase } from '../../lib/supabase'
 import { planifierRappelMatch } from '../../lib/notifications'
 import { cacheInvalidate } from '../../lib/cache'
-import { useEffect, useRef, useState } from 'react'
+import { safeParseEquipes, safeParseEquilibre, sanitizeEquipes } from '../../lib/validation'
+import { useEffect, useState, useRef } from 'react'
 import { Equipe, Joueur } from '../../types'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useTheme } from '../../contexts/ThemeContext'
@@ -500,15 +501,17 @@ export default function Resultat() {
   const { t } = useLanguage()
   const { colors } = useTheme()
 
-  const [equipes, setEquipes] = useState<Equipe[]>(() => {
-    try { return JSON.parse(equipesParam as string) ?? [] }
-    catch { return [] }
-  })
-  const [equilibre, setEquilibre] = useState(Number(equilibrePct))
+  // Safe parsing — never trust raw URL params
+  const [equipes, setEquipes] = useState<Equipe[]>(() => safeParseEquipes(equipesParam))
+  const [equilibre, setEquilibre] = useState(() => safeParseEquilibre(equilibrePct))
   const [vue, setVue] = useState<'liste' | 'terrain'>('liste')
   const [sport, setSport] = useState('Football')
   const [selected, setSelected] = useState<SelectedPlayer | null>(null)
-  const savedRef = useRef(false)
+
+  // Manual save state — user decides when to save
+  const [isSaved, setIsSaved] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   function swapPlayers(a: SelectedPlayer, b: { player: Joueur; teamIndex: number }) {
     setEquipes(prev => {
@@ -537,10 +540,6 @@ export default function Resultat() {
   }
 
   useEffect(() => {
-    if (!savedRef.current) {
-      savedRef.current = true
-      sauvegarderTirage()
-    }
     if (groupeId) fetchSport()
   }, [])
 
@@ -555,6 +554,7 @@ export default function Resultat() {
 
   function handleRelancer() {
     const tousJoueurs = equipes.flatMap(e => e.joueurs)
+    if (tousJoueurs.length < 4) return // guard: should not happen but safety first
     const { equipes: newEquipes, equilibrePct: newEquilibre } = genererEquipes({
       joueurs: tousJoueurs,
       nbEquipes: equipes.length,
@@ -562,26 +562,42 @@ export default function Resultat() {
     })
     setEquipes(newEquipes)
     setEquilibre(newEquilibre)
+    // New teams = not yet saved
+    setIsSaved(false)
+    setSaveError(null)
   }
 
-  async function sauvegarderTirage() {
+  async function handleSauvegarder() {
+    if (isSaved || isSaving || equipes.length < 2) return
+
+    setIsSaving(true)
+    setSaveError(null)
     try {
       const dateMatch = new Date()
-      await supabase.from('tirages').insert({
+      // Sanitize all string fields before writing to Supabase
+      const equipesClean = sanitizeEquipes(equipes)
+
+      const { error } = await supabase.from('tirages').insert({
         groupe_id: groupeId,
-        equipes: equipes,
+        equipes:   equipesClean,
         equilibre_pct: equilibre,
         date_match: dateMatch.toISOString().split('T')[0],
       })
+      if (error) throw error
+
       cacheInvalidate('tirages')
+      setIsSaved(true)
+
       await planifierRappelMatch(
         '',
         dateMatch,
         t('generatedTeams') + ' — ' + t('shareBalanceLabel') + ' ' + equilibre + '%',
         equipes.map(e => e.nom + ' (' + e.joueurs.length + ' ' + t('playersCount') + ')').join(' · ')
       )
-    } catch (e) {
-      // silently ignore
+    } catch {
+      setSaveError(t('saveError'))
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -618,7 +634,7 @@ export default function Resultat() {
         paddingBottom: 14,
       }}>
         <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 8 }}>
-          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>{t('back')}</Text>
+          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 20 }}>{t('back')}</Text>
         </TouchableOpacity>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -765,6 +781,34 @@ export default function Resultat() {
           renderTerrain()
         )}
 
+        {/* ── Save to History ── */}
+        <TouchableOpacity
+          onPress={handleSauvegarder}
+          disabled={isSaved || isSaving || equipes.length < 2}
+          style={{
+            borderRadius: 14, padding: 14, alignItems: 'center',
+            marginTop: 8,
+            backgroundColor: isSaved ? '#dcfce7' : saveError ? '#fee2e2' : '#16a34a',
+            opacity: isSaving ? 0.7 : 1,
+            borderWidth: isSaved ? 1 : 0,
+            borderColor: isSaved ? '#86efac' : 'transparent',
+          }}
+        >
+          <Text style={{
+            fontSize: 14, fontWeight: '600',
+            color: isSaved ? '#15803d' : saveError ? '#dc2626' : '#fff',
+          }}>
+            {isSaving
+              ? t('savingToHistory')
+              : isSaved
+                ? t('savedToHistory')
+                : saveError
+                  ? t('saveError')
+                  : t('saveToHistory')}
+          </Text>
+        </TouchableOpacity>
+
+        {/* ── Reroll & Share ── */}
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
           <TouchableOpacity
             onPress={handleRelancer}

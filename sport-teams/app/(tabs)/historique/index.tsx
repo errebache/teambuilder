@@ -3,9 +3,11 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { useFocusEffect } from 'expo-router'
 import { supabase } from '../../../lib/supabase'
 import { cacheGet, cacheSet } from '../../../lib/cache'
+import { isValidTirage } from '../../../lib/validation'
 import { useLanguage } from '../../../contexts/LanguageContext'
 import { useTheme } from '../../../contexts/ThemeContext'
 import AdBanner from '../../../components/AdBanner'
+import { Tirage } from '../../../types'
 
 const COULEURS = ['#2563eb', '#22c55e', '#f59e0b', '#8b5cf6']
 
@@ -28,7 +30,9 @@ function getEquilibreColor(pct: number): string {
 export default function Historique() {
   const { t } = useLanguage()
   const { colors } = useTheme()
-  const [tirages, setTirages] = useState<any[]>(() => cacheGet<any[]>('tirages') ?? [])
+  const [tirages, setTirages] = useState<Tirage[]>(() =>
+    (cacheGet<unknown[]>('tirages') ?? []).filter(isValidTirage) as Tirage[]
+  )
   const [loading, setLoading] = useState(!cacheGet('tirages'))
   const [fetchError, setFetchError] = useState<string | null>(null)
 
@@ -67,7 +71,8 @@ export default function Historique() {
         .in('groupe_id', tousGroupeIds)
         .order('created_at', { ascending: false })
       if (error) throw error
-      const result = data || []
+      // Filter out any malformed rows before storing or rendering
+      const result = (data ?? []).filter(isValidTirage) as Tirage[]
       cacheSet('tirages', result)
       setTirages(result)
     } catch (e: any) {
@@ -130,8 +135,8 @@ export default function Historique() {
           </View>
 
         ) : tirages.length > 0 ? (
-          tirages.map((tirage, index) => {
-            const equilibreColor = getEquilibreColor(tirage.equilibre_pct)
+          tirages.map((tirage) => {
+            const equilibreColor = getEquilibreColor(tirage.equilibre_pct ?? 0)
             return (
               <View
                 key={tirage.id}
@@ -187,9 +192,9 @@ export default function Historique() {
                     overflow: 'hidden',
                     marginTop: 14,
                   }}>
-                    {tirage.equipes.map((eq: any, i: number) => (
+                    {(tirage.equipes ?? []).map((eq, i) => (
                       <View key={i} style={{
-                        flex: eq.totalPoints || 1,
+                        flex: eq.totalPoints > 0 ? eq.totalPoints : 1,
                         backgroundColor: COULEURS[i % COULEURS.length],
                       }} />
                     ))}
@@ -202,11 +207,11 @@ export default function Historique() {
                   borderTopWidth: 1,
                   borderTopColor: colors.borderStrong,
                 }}>
-                  {tirage.equipes.map((eq: any, i: number) => (
+                  {(tirage.equipes ?? []).map((eq, i) => (
                     <View key={i} style={{
                       flex: 1,
                       padding: 12,
-                      borderRightWidth: i < tirage.equipes.length - 1 ? 1 : 0,
+                      borderRightWidth: i < (tirage.equipes?.length ?? 0) - 1 ? 1 : 0,
                       borderRightColor: colors.borderStrong,
                     }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 8 }}>
@@ -214,18 +219,18 @@ export default function Historique() {
                           width: 8, height: 8, borderRadius: 4,
                           backgroundColor: COULEURS[i % COULEURS.length],
                         }} />
-                        <Text style={{ fontSize: 11, fontWeight: '700', color: colors.text }}>
-                          {eq.nom}
+                        <Text style={{ fontSize: 11, fontWeight: '700', color: colors.text }} numberOfLines={1}>
+                          {eq.nom ?? '—'}
                         </Text>
                         <Text style={{ fontSize: 10, color: colors.textMuted, marginLeft: 'auto' }}>
-                          {eq.joueurs.length}
+                          {eq.joueurs?.length ?? 0}
                         </Text>
                       </View>
-                      {eq.joueurs.map((j: any) => (
+                      {(eq.joueurs ?? []).map((j) => (
                         <Text key={j.id} style={{
                           fontSize: 11, color: colors.textSecondary, marginBottom: 2,
                         }} numberOfLines={1}>
-                          {j.prenom}
+                          {j.prenom ?? ''}
                         </Text>
                       ))}
                     </View>

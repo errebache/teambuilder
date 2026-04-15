@@ -135,7 +135,7 @@ export default function ProfilJoueur() {
               router.replace('/(tabs)/joueurs')
             }
           }}>
-            <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16 }}>←</Text>
+            <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 20 }}>←</Text>
           </TouchableOpacity>
           <View style={{ flex: 1 }} />
           <TouchableOpacity

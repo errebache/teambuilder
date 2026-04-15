@@ -87,7 +87,7 @@ export default function EditGroupe() {
         gap: 12,
       }}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 16 }}>{arrow(isRTL)}</Text>
+          <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 20 }}>{arrow(isRTL)}</Text>
         </TouchableOpacity>
         <Text style={{ color: '#fff', fontSize: 20, fontWeight: '500' }}>
           {t('editGroup')}

@@ -119,7 +119,7 @@ export default function DetailGroupe() {
               alignItems: 'center', justifyContent: 'center',
             }}
           >
-            <Text style={{ color: '#fff', fontSize: 16 }}>←</Text>
+            <Text style={{ color: '#fff', fontSize: 20 }}>←</Text>
           </TouchableOpacity>
           <View style={{ flex: 1 }} />
           <TouchableOpacity
@@ -266,7 +266,7 @@ export default function DetailGroupe() {
           }}
         >
           <Play size={15} color={joueurs.length >= 4 ? '#fff' : colors.textMuted} />
-          <Text style={{ color: joueurs.length >= 4 ? '#fff' : colors.textMuted, fontSize: 13, fontWeight: '500' }}>
+          <Text style={{ color: joueurs.length >= 4 ? '#fff' : colors.textMuted, fontSize: 20, fontWeight: '500' }}>
             {joueurs.length < 4 ? `${4 - joueurs.length} ${t('generateTeamsMin')}` : t('generateTeams')}
           </Text>
         </TouchableOpacity>
